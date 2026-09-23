@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - Codera</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <main class="auth-container">
+
+        <!-- LEFT SIDE -->
+        <section class="auth-brand">
+
+            <a href="../index.html" class="logo">
+                CODERA
+            </a>
+
+            <div class="auth-brand-content">
+
+                <p class="section-label">
+                    START YOUR JOURNEY
+                </p>
+
+                <h1>
+                    LEARN TO CODE.
+                    <span>BUILD YOUR FUTURE.</span>
+                </h1>
+
+                <p>
+                    Create your Codera account and start learning
+                    programming through a structured learning journey.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="auth-form-section">
+
+            <div class="auth-form-wrapper">
+
+                <div class="auth-heading">
+
+                    <p class="section-label">
+                        STUDENT ACCOUNT
+                    </p>
+
+                    <h2>
+                        CREATE ACCOUNT
+                    </h2>
+
+                    <p>
+                        Already have an account?
+                        <a href="login.html">Log in</a>
+                    </p>
+
+                </div>
+
+
+                <form id="signupForm" class="auth-form">
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            FULL NAME
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Enter your full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            EMAIL
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            PASSWORD
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            CONFIRM PASSWORD
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Confirm your password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div id="signupMessage" class="auth-message"></div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button auth-submit"
+                    >
+                        CREATE ACCOUNT
+                    </button>
+
+                </form>
+
+
+                <p class="auth-footer-text">
+                    By creating an account, you agree to use Codera
+                    for educational purposes.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard - Codera</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/codera/css/style.css">
+    <link rel="stylesheet" href="/codera/css/dashboard.css">
+
+</head>
+
+
+<body>
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="topbar-logo">
+            CODERA
+        </div>
+
+
+        <nav class="topbar-nav">
+
+            <a href="/codera/pages/dashboard.html" class="active">
+                Dashboard
+            </a>
+
+            <a href="/codera/pages/courses.html">
+                Courses
+            </a>
+
+            <a href="/codera/pages/visualizer.html">
+                Visualizer
+            </a>
+
+            <a href="/codera/pages/community.html">
+                Community
+            </a>
+
+        </nav>
+
+
+        <div class="topbar-right">
+
+            <a href="/codera/pages/profile.html">
+                Profile
+            </a>
+
+            <a href="/codera/php/logout.php">
+                Log Out
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+
+        <!-- PAGE HEADER -->
+
+        <header class="page-header">
+
+            <p class="page-label">
+                STUDENT DASHBOARD
+            </p>
+
+            <h1>
+                Welcome back,
+                <span id="studentName">
+                    Student
+                </span>
+            </h1>
+
+            <p>
+                Continue learning and improve your coding skills.
+            </p>
+
+        </header>
+
+
+        <!-- STATS -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Courses
+                </h3>
+
+                <div
+                    class="stat-value"
+                    id="courseCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Progress
+                </h3>
+
+                <div
+                    class="stat-value"
+                    id="progressValue"
+                >
+                    0%
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Completed
+                </h3>
+
+                <div
+                    class="stat-value"
+                    id="completedCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    XP
+                </h3>
+
+                <div
+                    class="stat-value"
+                    id="xpValue"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DASHBOARD CONTENT -->
+
+        <section class="dashboard-grid">
+
+
+            <!-- CONTINUE LEARNING -->
+
+            <div class="dashboard-card">
+
+                <h2>
+                    Continue Learning
+                </h2>
+
+                <p id="continueCourse">
+                    No course started yet.
+                </p>
+
+
+                <div class="progress-bar">
+
+                    <div
+                        class="progress-fill"
+                        id="dashboardProgress"
+                    ></div>
+
+                </div>
+
+
+                <p>
+                    Keep learning to unlock the next lesson.
+                </p>
+
+            </div>
+
+
+            <!-- QUICK ACCESS -->
+
+            <div class="dashboard-card">
+
+                <h2>
+                    Quick Access
+                </h2>
+
+
+                <div class="quick-links">
+
+                    <a href="/codera/pages/courses.html">
+                        Explore Courses
+                    </a>
+
+                    <a href="/codera/pages/visualizer.html">
+                        Algorithm Visualizer
+                    </a>
+
+                    <a href="/codera/pages/community.html">
+                        Community
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ACTIVITY -->
+
+        <section
+            class="dashboard-card"
+            style="margin-top: 25px;"
+        >
+
+            <h2>
+                Recent Activity
+            </h2>
+
+            <p id="recentActivity">
+                No recent activity yet.
+            </p>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="/codera/js/app.js"></script>
+    <script src="/codera/js/dashboard.js"></script>
+
+</body>
+
+</html>

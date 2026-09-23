@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Codera</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <main class="auth-container">
+
+        <!-- LEFT SIDE -->
+        <section class="auth-brand">
+
+            <a href="../index.html" class="logo">
+                CODERA
+            </a>
+
+            <div class="auth-brand-content">
+
+                <p class="section-label">
+                    WELCOME BACK
+                </p>
+
+                <h1>
+                    KEEP LEARNING.
+                    <span>KEEP GROWING.</span>
+                </h1>
+
+                <p>
+                    Continue your coding journey, track your progress
+                    and unlock the next stage of your learning.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="auth-form-section">
+
+            <div class="auth-form-wrapper">
+
+                <div class="auth-heading">
+
+                    <p class="section-label">
+                        STUDENT LOGIN
+                    </p>
+
+                    <h2>
+                        WELCOME BACK
+                    </h2>
+
+                    <p>
+                        Don't have an account?
+                        <a href="signup.html">Create one</a>
+                    </p>
+
+                </div>
+
+
+                <form id="loginForm" class="auth-form">
+
+                    <div class="form-group">
+
+                        <label for="loginEmail">
+                            EMAIL
+                        </label>
+
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="loginPassword">
+                            PASSWORD
+                        </label>
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div id="loginMessage" class="auth-message"></div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button auth-submit"
+                    >
+                        LOG IN
+                    </button>
+
+                </form>
+
+
+                <p class="auth-footer-text">
+                    Login to access your Codera student dashboard.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>

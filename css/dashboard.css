@@ -1,0 +1,368 @@
+/* =========================
+   COMMON DASHBOARD LAYOUT
+   ========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+
+/* =========================
+   TOPBAR
+   ========================= */
+
+.topbar {
+    width: 100%;
+    min-height: 72px;
+
+    background: #0f172a;
+    color: white;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 40px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+/* LOGO */
+
+.topbar-logo {
+    color: white;
+
+    font-size: 23px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    margin-right: 50px;
+
+    flex-shrink: 0;
+}
+
+
+/* CENTER NAVIGATION */
+
+.topbar-nav {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+.topbar-nav a {
+    color: #cbd5e1;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    padding: 10px 14px;
+
+    border-radius: 7px;
+
+    transition: 0.2s ease;
+}
+
+.topbar-nav a:hover {
+    color: white;
+    background: #1e293b;
+}
+
+.topbar-nav a.active {
+    color: #0f172a;
+    background: white;
+
+    font-weight: 600;
+}
+
+
+/* RIGHT SIDE */
+
+.topbar-right {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+.topbar-right a {
+    color: #cbd5e1;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    padding: 10px 14px;
+
+    border-radius: 7px;
+
+    transition: 0.2s ease;
+}
+
+.topbar-right a:hover {
+    color: white;
+    background: #1e293b;
+}
+
+
+/* =========================
+   MAIN CONTENT
+   ========================= */
+
+.main-content {
+    width: 100%;
+
+    min-height: calc(100vh - 72px);
+
+    padding: 40px;
+}
+
+
+/* =========================
+   DASHBOARD PAGE
+   ========================= */
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-label {
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    color: #64748b;
+
+    margin-bottom: 8px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+
+    font-size: 32px;
+
+    color: #0f172a;
+}
+
+.page-header p {
+    margin: 0;
+
+    color: #64748b;
+}
+
+
+/* =========================
+   DASHBOARD STATS
+   ========================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 22px;
+}
+
+.stat-card h3 {
+    margin: 0 0 8px;
+
+    font-size: 13px;
+
+    color: #64748b;
+
+    font-weight: 600;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+
+/* =========================
+   DASHBOARD CARDS
+   ========================= */
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns: 2fr 1fr;
+
+    gap: 25px;
+}
+
+.dashboard-card {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 25px;
+}
+
+.dashboard-card h2 {
+    margin-top: 0;
+
+    font-size: 20px;
+}
+
+
+/* =========================
+   PROGRESS
+   ========================= */
+
+.progress-bar {
+    width: 100%;
+
+    height: 10px;
+
+    background: #e2e8f0;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin: 15px 0;
+}
+
+.progress-fill {
+    height: 100%;
+
+    width: 0%;
+
+    background: #0f172a;
+
+    border-radius: 20px;
+
+    transition: width 0.3s ease;
+}
+
+
+/* =========================
+   QUICK ACCESS
+   ========================= */
+
+.quick-links {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.quick-links a {
+    display: block;
+
+    text-decoration: none;
+
+    color: #0f172a;
+
+    background: #f8fafc;
+
+    padding: 13px 15px;
+
+    border-radius: 8px;
+
+    border: 1px solid #e2e8f0;
+
+    transition: 0.2s ease;
+}
+
+.quick-links a:hover {
+    background: #f1f5f9;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 1000px) {
+
+    .topbar {
+        padding: 0 25px;
+    }
+
+    .topbar-logo {
+        margin-right: 25px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .topbar {
+        min-height: auto;
+
+        padding: 15px 20px;
+
+        flex-wrap: wrap;
+
+        gap: 10px;
+    }
+
+    .topbar-logo {
+        margin-right: 15px;
+    }
+
+    .topbar-nav {
+        order: 3;
+
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    .topbar-right {
+        margin-left: auto;
+    }
+
+    .main-content {
+        padding: 25px 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
