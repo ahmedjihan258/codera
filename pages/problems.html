@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding Problems — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .problems-hero {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 100%);
+      padding: 48px 0 40px; margin-bottom: 32px;
+    }
+    .problems-hero h1 { color:var(--white); font-size:2rem; font-weight:900; }
+    .problems-hero p  { color:rgba(255,255,255,.5); margin-top:6px; }
+
+    .filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+    .filter-btn { padding:7px 18px; border-radius:100px; font-size:.82rem; font-weight:700; border:1.5px solid var(--border); background:var(--white); cursor:pointer; transition:all .15s; }
+    .filter-btn:hover  { border-color:var(--orange); color:var(--orange); }
+    .filter-btn.active { background:var(--orange); color:var(--white); border-color:var(--orange); }
+
+    .problem-list-item {
+      display:flex; align-items:center; gap:16px;
+      padding:16px 20px; background:var(--white); border-radius:var(--radius);
+      border:1px solid var(--border); margin-bottom:10px; cursor:pointer;
+      transition:box-shadow .15s;
+    }
+    .problem-list-item:hover { box-shadow:var(--shadow); }
+    .problem-list-item h4 { font-weight:700; font-size:.95rem; margin-bottom:3px; }
+    .problem-num { width:36px; height:36px; border-radius:50%; background:rgba(236,91,19,.1); color:var(--orange); font-weight:700; font-size:.82rem; display:flex;align-items:center;justify-content:center; flex-shrink:0; }
+
+    /* Problem detail modal */
+    .problem-detail { max-width:680px; }
+    .problem-detail h2 { font-size:1.3rem; font-weight:800; margin-bottom:8px; }
+    .problem-detail h4 { font-weight:700; margin:16px 0 6px; color:var(--orange); }
+    .problem-detail p  { font-size:.93rem; line-height:1.7; color:var(--text); }
+    .problem-detail pre {
+      background:#1e1e2e; color:#cdd6f4; border-radius:var(--radius);
+      padding:16px 20px; font-family:'Courier New',monospace; font-size:.85rem; margin:8px 0;
+    }
+    .hint-box {
+      background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius);
+      padding:12px 16px; font-size:.88rem; margin:8px 0;
+    }
+    .solution-box {
+      background:#f0fdf4; border:1px solid #86efac; border-radius:var(--radius);
+      padding:16px; margin:8px 0; display:none;
+    }
+    .solution-box.show { display:block; }
+  </style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html">Courses</a>
+      <a href="problems.html" class="active">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="problems-hero">
+      <div class="container">
+        <p class="section-label">Practice</p>
+        <h1>Coding Problems</h1>
+        <p>Sharpen your programming skills with curated challenges.</p>
+      </div>
+    </div>
+
+    <div class="container" style="padding-bottom:48px;">
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterProblems('all', this)">All</button>
+        <button class="filter-btn" onclick="filterProblems('Easy', this)">Easy</button>
+        <button class="filter-btn" onclick="filterProblems('Medium', this)">Medium</button>
+        <button class="filter-btn" onclick="filterProblems('Hard', this)">Hard</button>
+      </div>
+      <div id="problems-list">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem detail modal -->
+  <div class="modal-overlay" id="problem-modal">
+    <div class="modal problem-detail">
+      <button class="modal-close" onclick="closeModal('problem-modal')">✕</button>
+      <h2 id="modal-title">—</h2>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <span class="badge" id="modal-badge">—</span>
+      </div>
+      <h4>Description</h4>
+      <p id="modal-desc">—</p>
+      <h4>Example</h4>
+      <div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:4px;">Input:</p>
+        <pre id="modal-input">—</pre>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:4px;">Output:</p>
+        <pre id="modal-output">—</pre>
+      </div>
+      <h4>Hint</h4>
+      <div class="hint-box" id="modal-hint">—</div>
+      <div style="margin-top:20px;">
+        <button class="btn btn-outline-dark" onclick="toggleSolution()">💡 Show Solution</button>
+      </div>
+      <div class="solution-box" id="solution-box">
+        <h4 style="margin-top:0;color:#166534;">Solution</h4>
+        <pre id="modal-solution">—</pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/problems.js"></script>
+</body>
+</html>

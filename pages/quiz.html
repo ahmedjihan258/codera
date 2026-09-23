@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/quiz.css" />
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html" class="active">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper" style="padding-top:calc(var(--topbar-h) + 24px);">
+    <div class="container" style="padding-bottom:48px;">
+      <div class="quiz-container">
+        <a id="back-link" href="course-details.html" style="color:var(--text-muted);font-size:.85rem;display:inline-block;margin-bottom:20px;">← Back to Course</a>
+
+        <div id="quiz-loading"><div class="spinner"></div></div>
+
+        <!-- Quiz section -->
+        <div id="quiz-section" style="display:none;">
+          <div style="margin-bottom:24px;">
+            <p class="section-label" id="quiz-course-label">—</p>
+            <h2 style="font-size:1.5rem;font-weight:900;" id="quiz-title">—</h2>
+            <p class="text-muted text-sm mt-8">Answer all questions and click Submit to see your results.</p>
+          </div>
+
+          <!-- Best previous score -->
+          <div id="best-score-banner" style="display:none;" class="card" style="margin-bottom:20px;">
+            <div class="card-body" style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.4rem;">🏆</span>
+              <div>
+                <p class="text-bold">Previous Best</p>
+                <p class="text-muted text-sm" id="best-score-text">—</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div class="quiz-progress-header">
+              <span id="q-count-label">0 questions</span>
+              <span id="q-answered-label">0 answered</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="q-progress-bar" style="width:0%"></div>
+            </div>
+          </div>
+
+          <form id="quiz-form">
+            <div id="questions-container"></div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:24px;">
+              Submit Quiz
+            </button>
+          </form>
+        </div>
+
+        <!-- Results section -->
+        <div id="results-section" style="display:none;">
+          <div class="card result-card">
+            <div class="result-score-ring" id="score-ring">
+              <div class="result-score-value" id="score-val">0%</div>
+            </div>
+            <p class="result-feedback" id="result-feedback">—</p>
+            <p class="result-sub" id="result-sub">—</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <button class="btn btn-primary btn-lg" onclick="retakeQuiz()">Retake Quiz</button>
+              <a id="course-link" href="course-details.html" class="btn btn-outline-dark btn-lg">Back to Course</a>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          <h3 style="font-weight:800;margin:28px 0 16px;">Question Review</h3>
+          <div id="feedback-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/quiz.js"></script>
+</body>
+</html>

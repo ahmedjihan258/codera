@@ -1,112 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courses — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .courses-hero {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 100%);
+      padding: 48px 0 40px;
+      margin-bottom: 32px;
+    }
+    .courses-hero h1 { color: var(--white); font-size: 2rem; font-weight: 900; }
+    .courses-hero p  { color: rgba(255,255,255,.5); margin-top: 6px; }
 
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Courses - Codera</title>
-
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/courses.css">
-
+    .course-grid-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: box-shadow .2s;
+    }
+    .course-grid-card:hover { box-shadow: var(--shadow-md); }
+    .course-grid-card .stripe { height: 4px; background: var(--orange); }
+    .course-grid-card .body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .course-grid-card .icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .course-grid-card .row  { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .course-grid-card h3    { font-size: 1.1rem; font-weight: 800; }
+    .course-grid-card p     { color: var(--text-muted); font-size: .88rem; line-height: 1.6; flex: 1; margin-bottom: 14px; }
+    .course-meta-row        { display: flex; gap: 14px; font-size: .8rem; color: var(--text-muted); margin-bottom: 16px; }
+    .enrolled-tag { background: var(--green-light); color: #166534; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
+  </style>
 </head>
-
-
 <body>
 
-    <!-- =========================
-         TOPBAR
-         ========================= -->
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html" class="active">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
 
-    <header class="topbar">
+  <div class="page-wrapper">
+    <div class="courses-hero">
+      <div class="container">
+        <p class="section-label">All Courses</p>
+        <h1>Browse Learning Paths</h1>
+        <p>Choose a course, enroll, and start learning at your own pace.</p>
+      </div>
+    </div>
 
-        <div class="topbar-logo">
-            CODERA
-        </div>
+    <div class="container" style="padding-bottom:48px;">
+      <div id="courses-grid" class="grid-3">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
 
-
-        <nav class="topbar-nav">
-
-            <a href="dashboard.html">
-                Dashboard
-            </a>
-
-            <a href="courses.html" class="active">
-                Courses
-            </a>
-
-            <a href="visualizer.html">
-                Visualizer
-            </a>
-
-            <a href="community.html">
-                Community
-            </a>
-
-        </nav>
-
-
-        <div class="topbar-right">
-
-            <a href="profile.html">
-                Profile
-            </a>
-
-            <a href="../php/logout.php">
-                Log Out
-            </a>
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         MAIN CONTENT
-         ========================= -->
-
-    <main class="main-content">
-
-        <header class="page-header">
-
-            <p class="page-label">
-                LEARNING PATH
-            </p>
-
-            <h1>
-                Explore Courses
-            </h1>
-
-            <p>
-                Learn programming step by step and build your skills.
-            </p>
-
-        </header>
-
-
-        <section
-            class="courses-grid"
-            id="coursesContainer"
-        >
-
-            <p>
-                Loading courses...
-            </p>
-
-        </section>
-
-    </main>
-
-
-    <script src="../js/courses.js"></script>
-
+  <script src="../js/auth.js"></script>
+  <script src="../js/courses.js"></script>
 </body>
-
 </html>

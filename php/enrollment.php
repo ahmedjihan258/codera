@@ -1,164 +1,80 @@
 <?php
-
 session_start();
-
+header("Content-Type: application/json");
 require_once "db.php";
 
-header("Content-Type: application/json");
-
-
-// Check login
 if (!isset($_SESSION["user_id"])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Please login first."
-    ]);
+    echo json_encode(["success" => false, "message" => "Not authenticated."]);
     exit;
 }
 
 $user_id = $_SESSION["user_id"];
+$method  = $_SERVER["REQUEST_METHOD"];
 
+// GET: check enrollment or list enrollment
+if ($method === "GET") {
+    $course_id = isset($_GET["course_id"]) ? (int)$_GET["course_id"] : 0;
 
-// =========================
-// GET ENROLLMENT STATUS
-// =========================
-
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-
-    $course_id = intval($_GET["course_id"] ?? 0);
-
-    if ($course_id <= 0) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Invalid course."
-        ]);
-        exit;
+    if ($course_id) {
+        // Check single course
+        $stmt = $conn->prepare("SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?");
+        $stmt->bind_param("ii", $user_id, $course_id);
+        $stmt->execute();
+        $stmt->store_result();
+        echo json_encode(["success" => true, "enrolled" => $stmt->num_rows > 0]);
+        $stmt->close();
+    } else {
+        // Return all enrolled courses
+        $stmt = $conn->prepare("
+            SELECT c.*, e.enrolled_at FROM enrollments e
+            JOIN courses c ON c.id = e.course_id
+            WHERE e.user_id = ?
+        ");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $courses = [];
+        while ($row = $result->fetch_assoc()) $courses[] = $row;
+        echo json_encode(["success" => true, "courses" => $courses]);
+        $stmt->close();
     }
-
-    $stmt = $conn->prepare(
-        "SELECT id
-         FROM enrollments
-         WHERE user_id = ? AND course_id = ?"
-    );
-
-    $stmt->bind_param("ii", $user_id, $course_id);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
-    echo json_encode([
-        "success" => true,
-        "enrolled" => $result->num_rows > 0
-    ]);
-
-    $stmt->close();
-    $conn->close();
     exit;
 }
 
+// POST: enroll
+if ($method === "POST") {
+    $data      = json_decode(file_get_contents("php://input"), true);
+    $course_id = (int)($data["course_id"] ?? 0);
 
-// =========================
-// CREATE ENROLLMENT
-// =========================
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $course_id = intval($_POST["course_id"] ?? 0);
-
-    if ($course_id <= 0) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Invalid course."
-        ]);
+    if (!$course_id) {
+        echo json_encode(["success" => false, "message" => "Invalid course."]);
         exit;
     }
 
-
-    // Check course exists
-
-    $courseCheck = $conn->prepare(
-        "SELECT id FROM courses WHERE id = ?"
-    );
-
-    $courseCheck->bind_param("i", $course_id);
-    $courseCheck->execute();
-
-    $courseResult = $courseCheck->get_result();
-
-    if ($courseResult->num_rows === 0) {
-        echo json_encode([
-            "success" => false,
-            "message" => "Course not found."
-        ]);
-        exit;
-    }
-
-    $courseCheck->close();
-
-
-    // Check existing enrollment
-
-    $check = $conn->prepare(
-        "SELECT id
-         FROM enrollments
-         WHERE user_id = ? AND course_id = ?"
-    );
-
-    $check->bind_param("ii", $user_id, $course_id);
+    // Verify course exists
+    $check = $conn->prepare("SELECT id FROM courses WHERE id = ?");
+    $check->bind_param("i", $course_id);
     $check->execute();
-
-    $result = $check->get_result();
-
-    if ($result->num_rows > 0) {
-
-        echo json_encode([
-            "success" => true,
-            "message" => "You are already enrolled in this course.",
-            "already_enrolled" => true
-        ]);
-
+    $check->store_result();
+    if ($check->num_rows === 0) {
+        echo json_encode(["success" => false, "message" => "Course not found."]);
         $check->close();
-        $conn->close();
         exit;
     }
-
     $check->close();
 
-
-    // Create enrollment
-
-    $stmt = $conn->prepare(
-        "INSERT INTO enrollments (user_id, course_id)
-         VALUES (?, ?)"
-    );
-
+    // Insert (ignore duplicate)
+    $stmt = $conn->prepare("INSERT IGNORE INTO enrollments (user_id, course_id) VALUES (?, ?)");
     $stmt->bind_param("ii", $user_id, $course_id);
 
     if ($stmt->execute()) {
-
-        echo json_encode([
-            "success" => true,
-            "message" => "You are enrolled successfully!",
-            "already_enrolled" => false
-        ]);
-
+        echo json_encode(["success" => true, "message" => "Enrolled successfully!"]);
     } else {
-
-        echo json_encode([
-            "success" => false,
-            "message" => "Enrollment failed."
-        ]);
+        echo json_encode(["success" => false, "message" => "Enrollment failed."]);
     }
-
     $stmt->close();
-    $conn->close();
     exit;
 }
 
-
-echo json_encode([
-    "success" => false,
-    "message" => "Invalid request."
-]);
-
-?>
+echo json_encode(["success" => false, "message" => "Invalid request."]);
+$conn->close();

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualizer — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/visualizer.css" />
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html" class="active">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div style="background:linear-gradient(135deg,var(--dark) 0%,var(--dark-soft) 100%);padding:48px 0 40px;margin-bottom:32px;">
+      <div class="container">
+        <p class="section-label">Interactive Learning</p>
+        <h1 style="color:var(--white);font-size:2rem;font-weight:900;">Concept Visualizer</h1>
+        <p style="color:rgba(255,255,255,.5);margin-top:6px;">Understand sorting algorithms, variables, and loops step by step.</p>
+      </div>
+    </div>
+
+    <div class="container" style="padding-bottom:48px;">
+
+      <!-- Tabs -->
+      <div class="viz-tabs">
+        <button class="viz-tab active" onclick="showTab('sorting', this)">Sorting Algorithms</button>
+        <button class="viz-tab" onclick="showTab('variables', this)">Variables &amp; Types</button>
+        <button class="viz-tab" onclick="showTab('loops', this)">Loop Visualizer</button>
+      </div>
+
+      <!--Sorting -->
+      <div class="viz-panel active" id="tab-sorting">
+        <div class="card">
+          <div class="card-header">Bubble Sort Visualizer</div>
+          <div class="card-body">
+            <p class="text-muted text-sm mb-16">Enter comma-separated numbers (max 12) and watch Bubble Sort step through the array.</p>
+            <div class="viz-controls">
+              <input class="viz-input" type="text" id="sort-input" value="64, 34, 25, 12, 22, 11, 90" placeholder="e.g. 5, 3, 8, 1, 9" />
+              <button class="btn btn-primary" onclick="startSort()">▶ Sort</button>
+              <button class="btn btn-outline-dark" onclick="resetSort()">Reset</button>
+              <label style="font-size:.85rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+                Speed:
+                <select id="sort-speed" style="width:auto;padding:6px 10px;">
+                  <option value="600">Slow</option>
+                  <option value="300" selected>Normal</option>
+                  <option value="100">Fast</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="viz-canvas" id="sort-canvas">
+              <div class="bar-chart" id="bar-chart"></div>
+            </div>
+            <div class="viz-log" id="sort-log">
+              <div class="log-line">— Enter numbers and press Sort —</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="card mt-16">
+          <div class="card-header">How Bubble Sort Works</div>
+          <div class="card-body" style="font-size:.92rem;line-height:1.75;color:var(--text);">
+            <p><strong>Bubble Sort</strong> repeatedly steps through the list, compares adjacent elements, and swaps them if they're in the wrong order. The largest element "bubbles" to the end after each pass.</p>
+            <pre style="background:#1e1e2e;color:#cdd6f4;border-radius:var(--radius);padding:16px 20px;font-size:.82rem;margin-top:12px;">for i from 0 to n-1:
+  for j from 0 to n-i-2:
+    if arr[j] &gt; arr[j+1]:
+      swap(arr[j], arr[j+1])
+
+Time Complexity:  O(n²)
+Space Complexity: O(1)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!--Variables-->
+      <div class="viz-panel" id="tab-variables">
+        <div class="card">
+          <div class="card-header">Variable &amp; Type Inspector</div>
+          <div class="card-body">
+            <p class="text-muted text-sm mb-16">Declare JavaScript variables below and see how they are stored and what type they are.</p>
+            <div class="viz-controls">
+              <input class="viz-input" type="text" id="var-input" placeholder='e.g. let age = 21; const name = "Alice"; let active = true;' />
+              <button class="btn btn-primary" onclick="inspectVars()">Inspect</button>
+              <button class="btn btn-outline-dark" onclick="clearVars()">Clear</button>
+            </div>
+            <div class="viz-canvas" id="var-canvas">
+              <p style="color:rgba(255,255,255,.4);font-size:.88rem;">Declare some variables and click Inspect.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-16">
+          <div class="card-header">JavaScript Data Types</div>
+          <div class="card-body">
+            <div class="grid-3" style="gap:12px;">
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">number</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let x = 42;</code>
+              </div>
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">string</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let s = "hello";</code>
+              </div>
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">boolean</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let ok = true;</code>
+              </div>
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">array</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let arr = [1,2,3];</code>
+              </div>
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">object</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let o = {a:1};</code>
+              </div>
+              <div style="background:#1e1e2e;border-radius:var(--radius);padding:14px;">
+                <p style="color:var(--orange);font-weight:700;font-size:.82rem;margin-bottom:6px;">undefined / null</p>
+                <code style="color:#cdd6f4;font-family:monospace;font-size:.82rem;">let u;</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Loops-->
+      <div class="viz-panel" id="tab-loops">
+        <div class="card">
+          <div class="card-header">For Loop Visualizer</div>
+          <div class="card-body">
+            <p class="text-muted text-sm mb-16">Set the loop parameters and watch each iteration execute step by step.</p>
+            <div class="viz-controls">
+              <label style="font-size:.85rem;color:var(--text-muted);">Start:
+                <input type="number" id="loop-start" value="0" style="width:70px;margin-left:6px;" />
+              </label>
+              <label style="font-size:.85rem;color:var(--text-muted);">End:
+                <input type="number" id="loop-end" value="5" style="width:70px;margin-left:6px;" />
+              </label>
+              <label style="font-size:.85rem;color:var(--text-muted);">Step:
+                <input type="number" id="loop-step" value="1" min="1" style="width:70px;margin-left:6px;" />
+              </label>
+              <button class="btn btn-primary" onclick="runLoop()">▶ Run</button>
+              <button class="btn btn-outline-dark" onclick="clearLoop()">Clear</button>
+            </div>
+
+            <div class="viz-canvas" id="loop-canvas" style="min-height:160px;">
+              <p style="color:rgba(255,255,255,.4);font-size:.88rem;">Set loop parameters and click Run.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-16">
+          <div class="card-header">Loop Syntax Reference</div>
+          <div class="card-body">
+            <pre style="background:#1e1e2e;color:#cdd6f4;border-radius:var(--radius);padding:16px 20px;font-size:.85rem;line-height:1.7;">/* for loop */
+for (let i = start; i &lt; end; i += step) {
+  console.log("i =", i);
+}
+
+/* while loop */
+let i = start;
+while (i &lt; end) {
+  console.log("i =", i);
+  i += step;
+}
+
+/* for...of loop (arrays) */
+const arr = [10, 20, 30];
+for (const val of arr) {
+  console.log(val);
+}</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/visualizer.js"></script>
+</body>
+</html>

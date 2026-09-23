@@ -1,260 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Dashboard - Codera</title>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="/codera/css/style.css">
-    <link rel="stylesheet" href="/codera/css/dashboard.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
 </head>
-
-
 <body>
 
-    <!-- TOPBAR -->
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
 
-    <header class="topbar">
+    <div class="topbar-nav">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="courses.html">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
 
-        <div class="topbar-logo">
-            CODERA
+    <div class="topbar-right">
+      <div class="flex-center gap-8">
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+        <span style="color:rgba(255,255,255,0.8);font-size:.88rem;" id="topbar-user-name">Student</span>
+      </div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <!-- Dashboard Hero -->
+    <div class="dashboard-hero">
+      <div class="container">
+        <div class="dashboard-hero-inner">
+          <div class="avatar avatar-lg" id="dash-avatar">?</div>
+          <div class="dashboard-greeting">
+            <h2>Welcome back, <span id="dash-name">Student</span>! 👋</h2>
+            <p id="dash-joined">Keep learning — every lesson brings you closer to your goal.</p>
+          </div>
         </div>
 
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="value" id="stat-enrolled">0</div>
+            <div class="label">Enrolled Courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="stat-completed">0</div>
+            <div class="label">Completed Courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="stat-lessons">0</div>
+            <div class="label">Lessons Finished</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <nav class="topbar-nav">
+    <div class="container" style="padding-top:32px; padding-bottom:48px;">
+      <div class="grid-2" style="gap:28px; align-items:start;">
 
-            <a href="/codera/pages/dashboard.html" class="active">
-                Dashboard
-            </a>
-
-            <a href="/codera/pages/courses.html">
-                Courses
-            </a>
-
-            <a href="/codera/pages/visualizer.html">
-                Visualizer
-            </a>
-
-            <a href="/codera/pages/community.html">
-                Community
-            </a>
-
-        </nav>
-
-
-        <div class="topbar-right">
-
-            <a href="/codera/pages/profile.html">
-                Profile
-            </a>
-
-            <a href="/codera/php/logout.php">
-                Log Out
-            </a>
-
+        <!-- My Courses -->
+        <div>
+          <div class="section-header">
+            <h3>My Courses</h3>
+            <a href="courses.html" class="btn btn-outline-dark btn-sm">Browse All</a>
+          </div>
+          <div id="enrolled-courses-list">
+            <div class="spinner"></div>
+          </div>
         </div>
 
-    </header>
-
-
-    <!-- MAIN CONTENT -->
-
-    <main class="main-content">
-
-
-        <!-- PAGE HEADER -->
-
-        <header class="page-header">
-
-            <p class="page-label">
-                STUDENT DASHBOARD
-            </p>
-
-            <h1>
-                Welcome back,
-                <span id="studentName">
-                    Student
-                </span>
-            </h1>
-
-            <p>
-                Continue learning and improve your coding skills.
-            </p>
-
-        </header>
-
-
-        <!-- STATS -->
-
-        <section class="stats-grid">
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Courses
-                </h3>
-
-                <div
-                    class="stat-value"
-                    id="courseCount"
-                >
-                    0
-                </div>
-
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <!-- Recent Quiz Activity -->
+          <div class="card">
+            <div class="card-header">Recent Quiz Results</div>
+            <div class="card-body" id="quiz-activity">
+              <div class="spinner"></div>
             </div>
+          </div>
 
-
-            <div class="stat-card">
-
-                <h3>
-                    Progress
-                </h3>
-
-                <div
-                    class="stat-value"
-                    id="progressValue"
-                >
-                    0%
-                </div>
-
+          <!-- Quick Links -->
+          <div class="card">
+            <div class="card-header">Quick Access</div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <a href="courses.html" class="btn btn-green btn-block">📚 Courses</a>
+              <a href="problems.html" class="btn btn-outline-dark btn-block">💻 Problems</a>
+              <a href="visualizer.html" class="btn btn-outline-dark btn-block">👁 Visualizer</a>
+              <a href="community.html" class="btn btn-outline-dark btn-block">👥 Community</a>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-
-            <div class="stat-card">
-
-                <h3>
-                    Completed
-                </h3>
-
-                <div
-                    class="stat-value"
-                    id="completedCount"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    XP
-                </h3>
-
-                <div
-                    class="stat-value"
-                    id="xpValue"
-                >
-                    0
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- DASHBOARD CONTENT -->
-
-        <section class="dashboard-grid">
-
-
-            <!-- CONTINUE LEARNING -->
-
-            <div class="dashboard-card">
-
-                <h2>
-                    Continue Learning
-                </h2>
-
-                <p id="continueCourse">
-                    No course started yet.
-                </p>
-
-
-                <div class="progress-bar">
-
-                    <div
-                        class="progress-fill"
-                        id="dashboardProgress"
-                    ></div>
-
-                </div>
-
-
-                <p>
-                    Keep learning to unlock the next lesson.
-                </p>
-
-            </div>
-
-
-            <!-- QUICK ACCESS -->
-
-            <div class="dashboard-card">
-
-                <h2>
-                    Quick Access
-                </h2>
-
-
-                <div class="quick-links">
-
-                    <a href="/codera/pages/courses.html">
-                        Explore Courses
-                    </a>
-
-                    <a href="/codera/pages/visualizer.html">
-                        Algorithm Visualizer
-                    </a>
-
-                    <a href="/codera/pages/community.html">
-                        Community
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- RECENT ACTIVITY -->
-
-        <section
-            class="dashboard-card"
-            style="margin-top: 25px;"
-        >
-
-            <h2>
-                Recent Activity
-            </h2>
-
-            <p id="recentActivity">
-                No recent activity yet.
-            </p>
-
-        </section>
-
-
-    </main>
-
-
-    <!-- JAVASCRIPT -->
-
-    <script src="/codera/js/app.js"></script>
-    <script src="/codera/js/dashboard.js"></script>
-
+  <script src="../js/auth.js"></script>
+  <script src="../js/dashboard.js"></script>
 </body>
-
 </html>

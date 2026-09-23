@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/learning.css" />
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html" class="active">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper" style="padding-top:calc(var(--topbar-h) + 16px);">
+    <div class="container" style="padding-bottom:48px;">
+      <div style="margin-bottom:16px;">
+        <a href="course-details.html" id="back-link" style="color:var(--text-muted);font-size:.85rem;">← Back to Course</a>
+      </div>
+      <div id="main-layout" class="learning-layout">
+        <!-- Sidebar -->
+        <div class="card lesson-sidebar">
+          <div class="lesson-sidebar-header">
+            <span id="sidebar-course-title">Loading…</span>
+          </div>
+          <div id="lesson-list-container">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <!-- Lesson content -->
+        <div class="lesson-content-area">
+          <div class="lesson-content-header">
+            <h2 id="lesson-title">Select a lesson</h2>
+            <span class="badge badge-beginner" id="lesson-module-badge"></span>
+          </div>
+          <div class="lesson-body" id="lesson-body">
+            <div class="empty-state">
+              <div class="icon">📖</div>
+              <h3>Select a lesson from the sidebar</h3>
+              <p>Your progress is saved automatically when you mark a lesson complete.</p>
+            </div>
+          </div>
+          <div class="lesson-nav-bar">
+            <button id="prev-btn" class="btn btn-outline-dark" onclick="navigateLesson('prev')" disabled>← Previous</button>
+            <button id="complete-btn" class="btn btn-primary" onclick="markComplete()" disabled>Mark Complete ✓</button>
+            <button id="next-btn" class="btn btn-primary" onclick="navigateLesson('next')" disabled>Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/learning.js"></script>
+</body>
+</html>

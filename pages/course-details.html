@@ -1,106 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Details — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .details-hero {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 100%);
+      padding: 48px 0 40px;
+      margin-bottom: 32px;
+      color: var(--white);
+    }
+    .details-hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+    .details-hero p  { color: rgba(255,255,255,.55); max-width: 600px; line-height: 1.7; }
+    .details-meta    { display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; }
+    .details-meta span { color: rgba(255,255,255,.6); font-size: .88rem; }
 
-    <meta charset="UTF-8">
+    .lesson-list-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .lesson-list-item:last-child { border-bottom: none; }
+    .lesson-num {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(236,91,19,0.1); color: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .82rem; flex-shrink: 0;
+    }
+    .lesson-list-item .lesson-info h4 { font-weight: 700; font-size: .95rem; }
+    .lesson-list-item .lesson-info p  { font-size: .8rem; color: var(--text-muted); }
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    .enroll-sidebar { position: sticky; top: calc(var(--topbar-h) + 16px); }
+    .enroll-box { padding: 28px; text-align: center; }
+    .enroll-box .icon { font-size: 3rem; margin-bottom: 12px; }
+    .enroll-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .enroll-box p  { color: var(--text-muted); font-size: .88rem; margin-bottom: 20px; line-height: 1.5; }
+    .enrolled-badge {
+      background: var(--green-light); color: #166534;
+      font-weight: 700; padding: 8px 16px; border-radius: 100px;
+      display: inline-block; margin-bottom: 12px;
+    }
 
-    <title>Course Details - Codera</title>
-
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/courses.css">
-
+    .details-layout { display: grid; grid-template-columns: 1fr 320px; gap: 28px; align-items: start; }
+    @media (max-width: 860px) { .details-layout { grid-template-columns: 1fr; } }
+  </style>
 </head>
-
-
 <body>
 
-    <!-- =========================
-         TOPBAR
-         ========================= -->
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html" class="active">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
 
-    <header class="topbar">
+  <div class="page-wrapper">
+    <div class="details-hero" id="course-hero">
+      <div class="container">
+        <a href="courses.html" style="color:rgba(255,255,255,.5);font-size:.85rem;">← Back to Courses</a>
+        <p style="margin-top:16px;" class="section-label" id="hero-label">Loading…</p>
+        <h1 id="hero-title">—</h1>
+        <p id="hero-desc">—</p>
+        <div class="details-meta">
+          <span id="hero-level">—</span>
+          <span id="hero-duration">—</span>
+          <span id="hero-lessons">—</span>
+        </div>
+      </div>
+    </div>
 
-        <div class="topbar-logo">
-            CODERA
+    <div class="container" style="padding-bottom:48px;">
+      <div class="details-layout">
+
+        <!-- Lessons list -->
+        <div>
+          <h3 class="mb-16">Course Lessons</h3>
+          <div class="card">
+            <div id="lessons-list" class="card-body">
+              <div class="spinner"></div>
+            </div>
+          </div>
+
+          <!-- Quiz -->
+          <div class="mt-24">
+            <div class="card">
+              <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                <div>
+                  <h4 style="font-weight:700;">Take the Quiz</h4>
+                  <p class="text-muted text-sm mt-8">Test your knowledge of this course with a multiple-choice quiz.</p>
+                </div>
+                <a id="quiz-link" href="#" class="btn btn-primary" style="flex-shrink:0;">Start Quiz</a>
+              </div>
+            </div>
+          </div>
         </div>
 
-
-        <nav class="topbar-nav">
-
-            <a href="dashboard.html">
-                Dashboard
-            </a>
-
-            <a href="courses.html" class="active">
-                Courses
-            </a>
-
-            <a href="visualizer.html">
-                Visualizer
-            </a>
-
-            <a href="community.html">
-                Community
-            </a>
-
-        </nav>
-
-
-        <div class="topbar-right">
-
-            <a href="profile.html">
-                Profile
-            </a>
-
-            <a href="../php/logout.php">
-                Log Out
-            </a>
-
+        <!-- Enroll sidebar -->
+        <div class="enroll-sidebar">
+          <div class="card enroll-box">
+            <div class="icon" id="course-icon">📘</div>
+            <h3 id="enroll-title">—</h3>
+            <p id="enroll-desc">Enroll in this course to start learning and track your progress.</p>
+            <div id="enroll-action">
+              <button id="enroll-btn" class="btn btn-primary btn-block btn-lg" onclick="enrollNow()">Enroll Now</button>
+            </div>
+          </div>
         </div>
 
-    </header>
+      </div>
+    </div>
+  </div>
 
-
-    <!-- =========================
-         MAIN CONTENT
-         ========================= -->
-
-    <main class="main-content">
-
-        <a
-            href="courses.html"
-            style="
-                text-decoration: none;
-                color: #64748b;
-            "
-        >
-            ← Back to Courses
-        </a>
-
-
-        <section
-            class="course-details-card"
-            id="courseDetails"
-        >
-
-            <p>
-                Loading course...
-            </p>
-
-        </section>
-
-    </main>
-
-
-    <script src="../js/courses.js"></script>
-
+  <script src="../js/auth.js"></script>
+  <script src="../js/courses.js"></script>
 </body>
-
 </html>

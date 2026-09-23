@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .profile-hero { background:linear-gradient(135deg,var(--dark) 0%,var(--dark-soft) 100%); padding:48px 0 80px; margin-bottom:0; }
+    .profile-avatar-wrap { display:flex;flex-direction:column;align-items:center;margin-top:-56px;margin-bottom:20px; }
+    .profile-layout { display:grid; grid-template-columns:1fr 340px; gap:28px; align-items:start; }
+    .profile-stat { text-align:center; }
+    .profile-stat .val { font-size:1.8rem; font-weight:900; color:var(--orange); }
+    .profile-stat .lbl { font-size:.8rem; color:rgba(255,255,255,.5); margin-top:2px; }
+    .profile-stats-row { display:flex; gap:48px; justify-content:center; }
+
+    .profile-card { background:var(--white); border-radius:var(--radius-lg); box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; }
+    .profile-card-header { padding:18px 24px; border-bottom:1px solid var(--border); font-weight:700; font-size:1rem; }
+    .profile-card-body { padding:24px; }
+    @media (max-width:800px) { .profile-layout { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="courses.html">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+      <a href="profile.html" class="btn btn-outline btn-sm active">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="container" style="text-align:center;">
+        <p class="section-label" style="text-align:center;">My Account</p>
+        <h1 style="color:white;font-size:2rem;font-weight:900;" id="hero-name">Student</h1>
+        <p style="color:rgba(255,255,255,.5);margin-top:6px;" id="hero-email">—</p>
+        <div class="profile-stats-row mt-24">
+          <div class="profile-stat"><div class="val" id="stat-courses">0</div><div class="lbl">Courses Enrolled</div></div>
+          <div class="profile-stat"><div class="val" id="stat-lessons">0</div><div class="lbl">Lessons Completed</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top:32px;padding-bottom:48px;">
+      <div class="profile-layout">
+        <!-- Edit profile -->
+        <div>
+          <div class="profile-card mb-24">
+            <div class="profile-card-header">Edit Profile</div>
+            <div class="profile-card-body">
+              <div class="alert alert-error" id="profile-error"></div>
+              <div class="alert alert-success" id="profile-success"></div>
+              <form id="profile-form">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="full_name" required />
+                </div>
+                <div class="form-group">
+                  <label>Email (read-only)</label>
+                  <input type="email" id="email" readonly style="background:#f9fafb;color:var(--text-muted);" />
+                </div>
+                <div class="form-group">
+                  <label>Bio</label>
+                  <textarea id="bio" rows="3" placeholder="Tell us a bit about yourself…" style="resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Change password -->
+          <div class="profile-card">
+            <div class="profile-card-header">Change Password</div>
+            <div class="profile-card-body">
+              <div class="alert alert-error"   id="pwd-error"></div>
+              <div class="alert alert-success" id="pwd-success"></div>
+              <form id="password-form">
+                <div class="form-group">
+                  <label>Current Password</label>
+                  <input type="password" id="current_password" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" id="new_password" placeholder="Minimum 6 characters" minlength="6" />
+                </div>
+                <div class="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" id="confirm_new_password" placeholder="Repeat new password" />
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar: account info + danger zone -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="profile-card">
+            <div class="profile-card-header">Account Info</div>
+            <div class="profile-card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <p class="text-muted text-sm">Full Name</p>
+                  <p class="text-bold" id="info-name">—</p>
+                </div>
+                <div>
+                  <p class="text-muted text-sm">Email</p>
+                  <p class="text-bold" id="info-email">—</p>
+                </div>
+                <div>
+                  <p class="text-muted text-sm">Member Since</p>
+                  <p class="text-bold" id="info-joined">—</p>
+                </div>
+                <div>
+                  <p class="text-muted text-sm">Bio</p>
+                  <p id="info-bio" style="font-size:.9rem;color:var(--text);">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-header" style="color:#dc2626;">Danger Zone</div>
+            <div class="profile-card-body">
+              <p class="text-muted text-sm mb-16">Logging out will end your session and require you to log in again.</p>
+              <a href="../php/logout.php" class="btn btn-danger btn-block">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>
