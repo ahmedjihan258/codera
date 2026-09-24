@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <style>
+    /* Notification Dropdown Styling */
+    .notif-container { position: relative; display: inline-block; }
+    .notif-btn { position: relative; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 8px; padding: 6px 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; line-height: 1; transition: background 0.2s; }
+    .notif-btn:hover { background: rgba(255,255,255,0.15); }
+    .notif-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; font-size: 10px; font-weight: 700; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border: 2px solid #0d1117; }
+    .notif-menu { display: none; position: absolute; right: 0; top: 42px; width: 320px; background: #ffffff; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); z-index: 1000; padding: 16px; color: #1f2937; }
+    .notif-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 8px; margin-bottom: 12px; }
+    .notif-header h4 { margin: 0; font-size: 0.95rem; font-weight: 700; color: #111827; }
+    .notif-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .notif-item { padding: 10px; border-radius: 6px; background: #f9fafb; border-left: 3px solid var(--orange, #ec5b13); text-align: left; }
+    .notif-item strong { display: block; font-size: 0.85rem; color: #111827; }
+    .notif-item p { margin: 2px 0 4px 0; font-size: 0.8rem; color: #4b5563; line-height: 1.3; }
+    .notif-item small { font-size: 0.7rem; color: #9ca3af; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+
+    <div class="topbar-nav">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="courses.html">Courses</a>
+      <a href="problems.html">Problems</a>
+      <a href="visualizer.html">Visualizer</a>
+      <a href="community.html">Community</a>
+    </div>
+
+    <div class="topbar-right">
+      <!-- NOTIFICATION BELL -->
+      <div class="notif-container">
+        <button id="notif-btn" class="notif-btn" onclick="toggleNotifMenu()">
+          🔔 <span id="notif-badge" class="notif-badge" style="display:none;">0</span>
+        </button>
+        <div id="notif-menu" class="notif-menu">
+          <div class="notif-header">
+            <h4>Notifications</h4>
+          </div>
+          <div id="notif-list" class="notif-list">
+            <p style="color:#888; font-size:0.8rem; text-align:center;">No new notifications</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-center gap-8">
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:.85rem;">?</div>
+        <span style="color:rgba(255,255,255,0.8);font-size:.88rem;" id="topbar-user-name">Student</span>
+      </div>
+      <a href="profile.html" class="btn btn-outline btn-sm">Profile</a>
+      <a href="../php/logout.php" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <!-- Dashboard Hero -->
+    <div class="dashboard-hero">
+      <div class="container">
+        <div class="dashboard-hero-inner">
+          <div class="avatar avatar-lg" id="dash-avatar">?</div>
+          <div class="dashboard-greeting">
+            <h2>Welcome back, <span id="dash-name">Student</span>! 👋</h2>
+            <p id="dash-joined">Keep learning — every lesson brings you closer to your goal.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="value" id="stat-enrolled">0</div>
+            <div class="label">Enrolled Courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="stat-completed">0</div>
+            <div class="label">Completed Courses</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="stat-lessons">0</div>
+            <div class="label">Lessons Finished</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top:32px; padding-bottom:48px;">
+      <div class="grid-2" style="gap:28px; align-items:start;">
+
+        <!-- My Courses -->
+        <div>
+          <div class="section-header">
+            <h3>My Courses</h3>
+            <a href="courses.html" class="btn btn-outline-dark btn-sm">Browse All</a>
+          </div>
+          <div id="enrolled-courses-list">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <!-- Recent Quiz Activity -->
+          <div class="card">
+            <div class="card-header">Recent Quiz Results</div>
+            <div class="card-body" id="quiz-activity">
+              <div class="spinner"></div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="card">
+            <div class="card-header">Quick Access</div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <a href="courses.html" class="btn btn-green btn-block">📚 Courses</a>
+              <a href="problems.html" class="btn btn-outline-dark btn-block">💻 Problems</a>
+              <a href="visualizer.html" class="btn btn-outline-dark btn-block">👁 Visualizer</a>
+              <a href="community.html" class="btn btn-outline-dark btn-block">👥 Community</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

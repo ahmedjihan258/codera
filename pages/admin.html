@@ -1,0 +1,219 @@
+<!-- ===== FILE: pages/admin.html ===== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Codera</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .admin-layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; margin-top: 24px; }
+    .admin-sidebar { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 16px; }
+    .admin-nav-item { display: block; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: .9rem; cursor: pointer; color: var(--text-muted); margin-bottom: 4px; }
+    .admin-nav-item:hover { background: var(--bg); color: var(--text); }
+    .admin-nav-item.active { background: rgba(236,91,19,0.1); color: var(--orange); }
+    .table-container { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow-x: auto; }
+    table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .9rem; }
+    table.data-table th, table.data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    table.data-table th { background: #f9fafb; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: .75rem; letter-spacing: .05em; }
+    table.data-table tr:last-child td { border-bottom: none; }
+    .action-btns { display: flex; gap: 8px; }
+    .tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    @media (max-width: 768px) { .admin-layout { grid-template-columns: 1fr; } }
+
+    /* Lesson content block editor */
+    .block-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .block-empty-state { padding: 16px; text-align: center; color: var(--text-muted); font-size: .85rem; border: 1px dashed var(--border); border-radius: 10px; }
+    .content-block { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: #fafafa; }
+    .content-block-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .content-block-tag { font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--orange); background: rgba(236,91,19,0.1); padding: 3px 8px; border-radius: 6px; }
+    .content-block-actions { display: flex; gap: 4px; }
+    .content-block-actions button { border: 1px solid var(--border); background: var(--white); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: .8rem; line-height: 1; }
+    .content-block-actions button:hover { background: #f1f1f1; }
+    .content-block textarea, .content-block input[type="text"] { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: .88rem; font-family: inherit; }
+    .content-block textarea.code-editor { font-family: "SFMono-Regular", Consolas, Menlo, monospace; font-size: .82rem; background: #1e1e2e; color: #e5e5e5; }
+    .content-block-hint { font-size: .75rem; color: var(--text-muted); margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+    <div class="topbar-right">
+      <div class="avatar" id="topbar-avatar">A</div>
+      <span id="topbar-user-name" style="color:white;font-weight:600;font-size:.9rem;">Admin</span>
+      <a href="../php/logout.php" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="container">
+      <div class="admin-layout">
+
+        <!-- Sidebar Navigation -->
+        <div class="admin-sidebar">
+          <div class="admin-nav-item active" onclick="switchTab('courses')">Courses</div>
+          <div class="admin-nav-item" onclick="switchTab('lessons')">Lessons</div>
+          <div class="admin-nav-item" onclick="switchTab('problems')">Problems</div>
+          <div class="admin-nav-item" onclick="switchTab('users')">Users</div>
+        </div>
+
+        <!-- Main Content Panel -->
+        <main>
+          <!-- STATS OVERVIEW -->
+          <div class="grid-4 mb-24" id="stats-grid">
+            <div class="card card-body"><div class="text-muted">Total Courses</div><h2 id="stat-c-val" class="text-orange mt-8">0</h2></div>
+            <div class="card card-body"><div class="text-muted">Total Lessons</div><h2 id="stat-l-val" class="text-orange mt-8">0</h2></div>
+            <div class="card card-body"><div class="text-muted">Total Problems</div><h2 id="stat-p-val" class="text-orange mt-8">0</h2></div>
+            <div class="card card-body"><div class="text-muted">Total Users</div><h2 id="stat-u-val" class="text-orange mt-8">0</h2></div>
+          </div>
+
+          <!-- COURSES TAB -->
+          <section id="tab-courses">
+            <div class="tab-header">
+              <h3>Manage Courses</h3>
+              <button class="btn btn-primary btn-sm" onclick="openCourseModal()">+ Add Course</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>Icon</th><th>Title</th><th>Level</th><th>Duration</th><th>Lessons</th><th>Actions</th></tr></thead>
+                <tbody id="tbl-courses"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- LESSONS TAB -->
+          <section id="tab-lessons" style="display:none;">
+            <div class="tab-header">
+              <h3>Manage Lessons</h3>
+              <button class="btn btn-primary btn-sm" onclick="openLessonModal()">+ Add Lesson</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>Course</th><th>Module</th><th>Title</th><th>Order</th><th>Actions</th></tr></thead>
+                <tbody id="tbl-lessons"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- PROBLEMS TAB -->
+          <section id="tab-problems" style="display:none;">
+            <div class="tab-header">
+              <h3>Manage Coding Problems</h3>
+              <button class="btn btn-primary btn-sm" onclick="openProblemModal()">+ Add Problem</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>Title</th><th>Difficulty</th><th>Actions</th></tr></thead>
+                <tbody id="tbl-problems"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- USERS TAB -->
+          <section id="tab-users" style="display:none;">
+            <div class="tab-header">
+              <h3>Manage Users</h3>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+                <tbody id="tbl-users"></tbody>
+              </table>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSE MODAL -->
+  <div class="modal-overlay" id="modal-course">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-course')">&times;</button>
+      <h3 class="modal-title" id="course-modal-title">Add Course</h3>
+      <input type="hidden" id="c-id" />
+      <div class="form-group mt-16"><label>Title</label><input type="text" id="c-title" /></div>
+      <div class="form-group"><label>Description</label><textarea id="c-desc" rows="3"></textarea></div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Level</label>
+          <select id="c-level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+        </div>
+        <div class="form-group"><label>Duration</label><input type="text" id="c-duration" placeholder="e.g. 4 weeks" /></div>
+      </div>
+      <div class="form-group"><label>Icon (Emoji)</label><input type="text" id="c-icon" placeholder="🌐" /></div>
+      <button class="btn btn-primary btn-block mt-16" onclick="saveCourse()">Save Course</button>
+    </div>
+  </div>
+
+  <!-- LESSON MODAL -->
+  <div class="modal-overlay" id="modal-lesson">
+    <div class="modal" style="max-width:680px;">
+      <button class="modal-close" onclick="closeModal('modal-lesson')">&times;</button>
+      <h3 class="modal-title" id="lesson-modal-title">Add Lesson</h3>
+      <input type="hidden" id="l-id" />
+      <div class="form-group mt-16">
+        <label>Course</label>
+        <select id="l-course-id"></select>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Module</label>
+          <select id="l-module-select" onchange="toggleNewModuleInput(this.value)">
+            <option value="">-- Select Course First --</option>
+          </select>
+          <input type="text" id="l-module-custom" placeholder="e.g. Module 1: Basics" style="display:none; margin-top:8px;" />
+        </div>
+        <div class="form-group"><label>Order Number</label><input type="number" id="l-order" value="1" /></div>
+      </div>
+      <div class="form-group"><label>Lesson Title</label><input type="text" id="l-title" /></div>
+      <div class="form-group">
+        <label>Lesson Content</label>
+        <div id="l-blocks"></div>
+        <div class="block-toolbar">
+          <button type="button" class="btn btn-outline-dark btn-sm" onclick="addContentBlock('heading')">+ Heading</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" onclick="addContentBlock('paragraph')">+ Paragraph</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" onclick="addContentBlock('code')">+ Code Block</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" onclick="addContentBlock('list')">+ Bullet List</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" onclick="addContentBlock('html')">+ Custom HTML</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block mt-16" onclick="saveLesson()">Save Lesson</button>
+    </div>
+  </div>
+
+  <!-- PROBLEM MODAL -->
+  <div class="modal-overlay" id="modal-problem">
+    <div class="modal" style="max-width:680px;">
+      <button class="modal-close" onclick="closeModal('modal-problem')">&times;</button>
+      <h3 class="modal-title" id="problem-modal-title">Add Problem</h3>
+      <input type="hidden" id="p-id" />
+      <div class="grid-2 mt-16">
+        <div class="form-group"><label>Title</label><input type="text" id="p-title" /></div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select id="p-diff"><option>Easy</option><option>Medium</option><option>Hard</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="p-desc" rows="3"></textarea></div>
+      <div class="grid-2">
+        <div class="form-group"><label>Example Input</label><input type="text" id="p-in" /></div>
+        <div class="form-group"><label>Example Output</label><input type="text" id="p-out" /></div>
+      </div>
+      <div class="form-group"><label>Hint</label><input type="text" id="p-hint" /></div>
+      <div class="form-group"><label>Solution JS</label><textarea id="p-sol" rows="3"></textarea></div>
+      <button class="btn btn-primary btn-block mt-16" onclick="saveProblem()">Save Problem</button>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

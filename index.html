@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Codera — Learn Web Programming</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Landing-page only styles */
+    body { overflow-x: hidden; }
+
+    /*Hero*/
+    .hero {
+      background: linear-gradient(135deg, var(--dark) 0%, #3a200e 55%, #1a0d06 100%);
+      padding: 120px 0 80px;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(236,91,19,0.18);
+      color: var(--orange);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      margin-bottom: 20px;
+    }
+    .hero-tag span { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero h1 em { color: var(--orange); font-style: normal; }
+    .hero p {
+      color: rgba(255,255,255,0.58);
+      font-size: 1rem;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      max-width: 440px;
+    }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* stat cards */
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .hero-stat {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+    }
+    .hero-stat .val {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .hero-stat .lbl {
+      font-size: .82rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    /*Section: Courses*/
+    .courses-section { padding: 80px 0; }
+    .course-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .course-card:hover { box-shadow: var(--shadow-md); }
+    .course-card-stripe { height: 4px; background: var(--orange); }
+    .course-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .course-card-icon { font-size: 2.4rem; margin-bottom: 14px; }
+    .course-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .course-card-top h3 { font-size: 1.1rem; font-weight: 800; }
+    .course-card-desc { color: var(--text-muted); font-size: .88rem; line-height: 1.65; margin-bottom: 16px; flex: 1; }
+    .course-meta { display: flex; gap: 16px; font-size: .8rem; color: var(--text-muted); margin-bottom: 18px; }
+    .course-card-body .btn { margin-top: auto; }
+
+    /* Section: Features */
+    .features-section { padding: 80px 0; background: var(--white); }
+    .feature-card {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+      transition: border-color .2s;
+    }
+    .feature-card:hover { border-color: rgba(236,91,19,0.4); }
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: rgba(236,91,19,0.1);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+    .feature-card h4 { font-weight: 800; font-size: .98rem; margin-bottom: 6px; }
+    .feature-card p  { color: var(--text-muted); font-size: .85rem; line-height: 1.6; }
+
+    /*Section: Why*/
+    .why-section { padding: 80px 0; }
+    .why-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .why-list { list-style: none; margin: 20px 0 32px; }
+    .why-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: .92rem;
+    }
+    .why-list li:last-child { border-bottom: none; }
+    .why-list .check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: .7rem;
+      margin-top: 1px;
+    }
+
+    /* community*/
+    .community-preview {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .community-preview-title {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 16px;
+    }
+    .preview-post {
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .preview-post:last-child { margin-bottom: 0; }
+    .preview-post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .preview-post-user { display: flex; align-items: center; gap: 8px; }
+    .preview-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; color: white; font-size: .65rem; font-weight: 700; }
+    .preview-post-user span { font-size: .82rem; font-weight: 700; }
+    .preview-post p { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
+    .preview-votes { font-size: .78rem; color: var(--orange); font-weight: 700; }
+
+    /*Footer*/
+    .footer {
+      background: var(--dark);
+      padding: 48px 0 28px;
+    }
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; }
+    .footer-logo-icon { width: 36px; height: 36px; background: var(--orange); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .footer-logo-name { color: var(--white); font-weight: 700; font-size: 1.05rem; }
+    .footer-tagline { color: rgba(255,255,255,0.35); font-size: .82rem; text-align: center; }
+    .footer-copy { text-align: center; color: rgba(255,255,255,0.22); font-size: .8rem; margin-top: 24px; }
+
+    /* responsive */
+    @media (max-width: 800px) {
+      .hero-inner, .why-inner { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR (landing version)   -->
+  <nav class="topbar">
+    <a href="index.html" class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <span class="topbar-logo-name">Codera</span>
+    </a>
+
+    <div class="topbar-nav">
+      <a href="#courses">Courses</a>
+      <a href="#features">Features</a>
+      <a href="#why">Community</a>
+    </div>
+
+    <div class="topbar-right">
+      <a href="pages/login.html" class="btn btn-outline btn-sm">Login</a>
+      <a href="pages/signup.html" class="btn btn-primary btn-sm">Sign Up Free</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-tag">
+            <span></span>
+            Student Learning Platform
+          </div>
+          <h1>Learn Web<br><em>Programming</em><br>the Right Way</h1>
+          <p>Codera is a progressive learning platform built for students. Master HTML&nbsp;&amp;&nbsp;CSS, JavaScript, and PHP through structured courses, interactive quizzes, coding challenges, and a supportive community.</p>
+          <div class="hero-cta">
+            <a href="pages/signup.html" class="btn btn-primary btn-lg">Get Started Free</a>
+            <a href="pages/login.html"  class="btn btn-outline btn-lg">Login</a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="val">3</div><div class="lbl">Core Courses</div></div>
+          <div class="hero-stat"><div class="val">90+</div><div class="lbl">Lessons</div></div>
+          <div class="hero-stat"><div class="val">100+</div><div class="lbl">Quiz Questions</div></div>
+          <div class="hero-stat"><div class="val">24/7</div><div class="lbl">Community</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COURSES -->
+  <section class="courses-section" id="courses">
+    <div class="container">
+      <p class="section-label">What You'll Learn</p>
+      <h2 class="section-title">Available Courses</h2>
+      <p class="text-muted mb-24">Three carefully designed courses to take you from beginner to confident web developer.</p>
+
+      <div class="grid-3">
+        <!-- HTML & CSS -->
+        <div class="course-card">
+          <div class="course-card-stripe"></div>
+          <div class="course-card-body">
+            <div class="course-card-icon">🌐</div>
+            <div class="course-card-top">
+              <h3>HTML &amp; CSS</h3>
+              <span class="badge badge-beginner">Beginner</span>
+            </div>
+            <p class="course-card-desc">Build the foundation of every webpage. Learn semantic HTML5, responsive layouts, Flexbox, Grid, and modern CSS.</p>
+            <div class="course-meta">
+              <span>⏱ 4 weeks</span>
+              <span>📖 12 lessons</span>
+            </div>
+            <a href="pages/signup.html" class="btn btn-green btn-block">View Course</a>
+          </div>
+        </div>
+
+        <!-- JavaScript -->
+        <div class="course-card">
+          <div class="course-card-stripe"></div>
+          <div class="course-card-body">
+            <div class="course-card-icon">⚡</div>
+            <div class="course-card-top">
+              <h3>JavaScript</h3>
+              <span class="badge badge-intermediate">Intermediate</span>
+            </div>
+            <p class="course-card-desc">Master the language of the web. From variables to async/await, DOM manipulation to the Fetch API.</p>
+            <div class="course-meta">
+              <span>⏱ 6 weeks</span>
+              <span>📖 16 lessons</span>
+            </div>
+            <a href="pages/signup.html" class="btn btn-green btn-block">View Course</a>
+          </div>
+        </div>
+
+        <!-- PHP -->
+        <div class="course-card">
+          <div class="course-card-stripe"></div>
+          <div class="course-card-body">
+            <div class="course-card-icon">🐘</div>
+            <div class="course-card-top">
+              <h3>PHP</h3>
+              <span class="badge badge-intermediate">Intermediate</span>
+            </div>
+            <p class="course-card-desc">Build dynamic server-side applications. Learn PHP fundamentals, MySQL integration, and session handling.</p>
+            <div class="course-meta">
+              <span>⏱ 5 weeks</span>
+              <span>📖 14 lessons</span>
+            </div>
+            <a href="pages/signup.html" class="btn btn-green btn-block">View Course</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <p class="section-label">Platform Highlights</p>
+      <h2 class="section-title">Everything You Need to Succeed</h2>
+      <p class="text-muted mb-24">One platform. All the tools a student needs to learn, practice, and grow.</p>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h4>Structured Courses</h4>
+          <p>Follow carefully designed learning paths with modules, lessons, and real-world exercises.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">❓</div>
+          <h4>Interactive Quizzes</h4>
+          <p>Test your understanding after every module with auto-graded quizzes and instant feedback.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h4>Track Your Progress</h4>
+          <p>See exactly how far you've come with per-course and per-lesson progress tracking.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👁</div>
+          <h4>Concept Visualizer</h4>
+          <p>Understand sorting, variables, and loops through step-by-step interactive visualizations.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👥</div>
+          <h4>Student Community</h4>
+          <p>Ask questions, share solutions, and grow together with fellow Codera learners.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💻</div>
+          <h4>Coding Problems</h4>
+          <p>Sharpen your skills with curated problems ranging from beginner to advanced difficulty.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WhyCodera -->
+  <section class="why-section" id="why">
+    <div class="container">
+      <div class="why-inner">
+        <div>
+          <p class="section-label">Why Codera?</p>
+          <h2 class="section-title">Built for<br>Student Success</h2>
+          <ul class="why-list">
+            <li><span class="check">✓</span> Beginner-friendly, structured learning paths</li>
+            <li><span class="check">✓</span> Hands-on coding problems and quizzes</li>
+            <li><span class="check">✓</span> Real-time progress tracking and feedback</li>
+            <li><span class="check">✓</span> Active student community to grow together</li>
+            <li><span class="check">✓</span> Built with HTML, CSS, JS, PHP &amp; MySQL</li>
+          </ul>
+          <a href="pages/signup.html" class="btn btn-primary btn-lg">Join Codera Today</a>
+        </div>
+        <div class="community-preview">
+          <div class="community-preview-title">Student Community</div>
+          <div class="preview-post">
+            <div class="preview-post-header">
+              <div class="preview-post-user">
+                <div class="preview-avatar">A</div>
+                <span>Aisha Rahman</span>
+              </div>
+              <span class="preview-votes">▲ 15</span>
+            </div>
+            <p>Flexbox finally clicked for me after the CSS module. Highly recommend practicing with small layouts daily!</p>
+          </div>
+          <div class="preview-post">
+            <div class="preview-post-header">
+              <div class="preview-post-user">
+                <div class="preview-avatar">R</div>
+                <span>Rafiul Islam</span>
+              </div>
+              <span class="preview-votes">▲ 8</span>
+            </div>
+            <p>Anyone have tips on PHP sessions? Getting confused between sessions and cookies.</p>
+          </div>
+          <div class="preview-post">
+            <div class="preview-post-header">
+              <div class="preview-post-user">
+                <div class="preview-avatar">N</div>
+                <span>Nusrat Jahan</span>
+              </div>
+              <span class="preview-votes">▲ 21</span>
+            </div>
+            <p>The JS quiz was tough but so helpful. I recommend doing it twice!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </div>
+          <span class="footer-logo-name">Codera</span>
+        </div>
+        <span class="footer-tagline">A progressive web programming learning platform for students.</span>
+        <div style="display:flex;gap:10px;">
+          <a href="pages/login.html"  class="btn btn-outline btn-sm">Login</a>
+          <a href="pages/signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+      </div>
+      <p class="footer-copy">© 2026 Codera. Student Learning Platform.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

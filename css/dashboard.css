@@ -1,0 +1,129 @@
+/*dshboard page*/
+
+.dashboard-hero {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 100%);
+  padding: 40px 0 48px;
+  margin-bottom: 32px;
+}
+
+.dashboard-hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+
+.dashboard-greeting h2 {
+  color: var(--white);
+  font-size: 1.6rem;
+  font-weight:800;
+}
+
+.dashboard-greeting p {
+  color: rgba(255,255,255,0.55);
+  font-size: .9rem;
+  margin-top: 4px;
+}
+
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+
+
+.stat-card {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+
+.stat-card .value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.stat-card .label {
+  font-size: .8rem;
+  color: rgba(255,255,255,0.55);
+  margin-top: 4px;
+}
+
+
+.course-card-enrolled {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+
+.course-card-enrolled .course-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.course-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: rgba(236,91,19,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.course-card-enrolled h4 { font-weight: 700; font-size: 1rem; }
+.course-card-enrolled .meta { font-size: .8rem; color: var(--text-muted); }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+
+
+.recent-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.recent-activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--orange);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.activity-text { font-size: .9rem; }
+.activity-time { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+
+
+
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
