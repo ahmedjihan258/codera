@@ -1,10 +1,96 @@
+<<<<<<< HEAD
+/* ===== FILE: js/dashboard.js ===== */
+
+// ---------- NOTIFICATION FUNCTIONS ----------
+async function fetchNotifications() {
+  try {
+    const res = await fetch("../php/notifications.php?action=get");
+    const data = await res.json();
+
+    if (data.success && Array.isArray(data.notifications)) {
+      const list = document.getElementById("notif-list");
+      const badge = document.getElementById("notif-badge");
+
+      if (!list || !badge) return;
+
+      let unreadCount = 0;
+
+      if (data.notifications.length === 0) {
+        list.innerHTML = '<p style="color:#888; font-size:0.8rem; text-align:center;">No new notifications</p>';
+        return;
+      }
+
+      list.innerHTML = "";
+
+      data.notifications.forEach(n => {
+        if (parseInt(n.is_read) === 0) {
+          unreadCount++;
+        }
+
+        const item = document.createElement("div");
+        item.className = "notif-item";
+        item.innerHTML = `
+          <strong>${n.title}</strong>
+          <p>${n.message}</p>
+          <small>${new Date(n.created_at).toLocaleDateString()}</small>
+        `;
+        list.appendChild(item);
+      });
+
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = "flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load notifications:", err);
+  }
+}
+
+function toggleNotifMenu() {
+  const menu = document.getElementById("notif-menu");
+  const badge = document.getElementById("notif-badge");
+
+  if (!menu) return;
+
+  const isHidden = menu.style.display === "none" || menu.style.display === "";
+  menu.style.display = isHidden ? "block" : "none";
+
+  if (isHidden && badge) {
+    // Hide badge and mark as read on backend
+    badge.style.display = "none";
+    fetch("../php/notifications.php?action=mark_read");
+  }
+}
+
+// Close notification menu when clicking outside
+document.addEventListener("click", (e) => {
+  const container = document.querySelector(".notif-container");
+  const menu = document.getElementById("notif-menu");
+  if (container && menu && !container.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+
+
+// ---------- DASHBOARD LOADER ----------
+=======
 /* for dashboard */
 
 
+>>>>>>> origin/main
 (async function () {
   const session = await requireAuth();
   setTopbarUser(session.user_name);
 
+<<<<<<< HEAD
+  // Initialize notifications on load
+  fetchNotifications();
+
+=======
+>>>>>>> origin/main
   try {
     const res  = await fetch("../php/dashboard.php");
     const data = await res.json();
@@ -60,7 +146,10 @@
         </div>`).join("");
     }
 
+<<<<<<< HEAD
+=======
     
+>>>>>>> origin/main
     // Quiz attempts
     const qContainer = document.getElementById("quiz-activity");
     if (data.quiz_attempts.length === 0) {
