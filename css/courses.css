@@ -1,0 +1,341 @@
+/* =========================
+   COURSES PAGE
+   ========================= */
+
+.courses-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 25px;
+}
+
+
+/* =========================
+   COURSE CARD
+   ========================= */
+
+.course-card {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: 0.2s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+
+/* ICON */
+
+.course-icon {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 12px;
+
+    background: #0f172a;
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    margin-bottom: 20px;
+}
+
+
+/* TITLE */
+
+.course-card h2 {
+    font-size: 21px;
+
+    color: #0f172a;
+
+    margin: 0 0 10px;
+}
+
+
+/* DESCRIPTION */
+
+.course-description {
+    color: #64748b;
+
+    line-height: 1.6;
+
+    min-height: 75px;
+
+    margin: 0;
+}
+
+
+/* META */
+
+.course-meta {
+    display: flex;
+
+    gap: 10px;
+
+    margin: 20px 0;
+
+    flex-wrap: wrap;
+}
+
+.course-meta span {
+    font-size: 12px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+}
+
+
+/* BUTTON */
+
+.course-button {
+    margin-top: auto;
+
+    display: block;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    background: #0f172a;
+
+    color: white;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.course-button:hover {
+    background: #1e293b;
+}
+
+
+/* =========================
+   COURSE DETAILS
+   ========================= */
+
+.course-details-card {
+    max-width: 900px;
+
+    margin: 30px auto 0;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 16px;
+
+    padding: 40px;
+}
+
+.course-details-icon {
+    width: 75px;
+    height: 75px;
+
+    background: #0f172a;
+
+    color: white;
+
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    margin-bottom: 25px;
+}
+
+.course-details-card h1 {
+    font-size: 36px;
+
+    color: #0f172a;
+
+    margin: 0 0 15px;
+}
+
+.course-details-description {
+    color: #64748b;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    margin-bottom: 25px;
+}
+
+.course-details-meta {
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 30px;
+
+    flex-wrap: wrap;
+}
+
+.course-details-meta span {
+    padding: 8px 14px;
+
+    background: #f1f5f9;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    color: #475569;
+}
+
+
+/* =========================
+   ENROLL BUTTON
+   ========================= */
+
+.enroll-button {
+    border: none;
+
+    background: #0f172a;
+
+    color: white;
+
+    padding: 14px 25px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.enroll-button:hover {
+    background: #1e293b;
+}
+
+.enroll-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   ENROLLMENT SUCCESS
+   ========================= */
+
+.enrollment-success {
+    text-align: center;
+
+    padding: 30px;
+}
+
+.enrollment-success-icon {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+}
+
+.enrollment-success h2 {
+    color: #0f172a;
+
+    margin: 0 0 10px;
+}
+
+.enrollment-success p {
+    color: #64748b;
+
+    margin-bottom: 25px;
+}
+
+.start-learning-button {
+    display: inline-block;
+
+    text-decoration: none;
+
+    background: #0f172a;
+
+    color: white;
+
+    padding: 13px 25px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+}
+
+.start-learning-button:hover {
+    background: #1e293b;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 1000px) {
+
+    .courses-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-details-card {
+        padding: 25px;
+    }
+
+    .course-details-card h1 {
+        font-size: 28px;
+    }
+}
