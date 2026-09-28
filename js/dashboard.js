@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /* ===== FILE: js/dashboard.js ===== */
 
 // ---------- NOTIFICATION FUNCTIONS ----------
@@ -76,21 +75,13 @@ document.addEventListener("click", (e) => {
 
 
 // ---------- DASHBOARD LOADER ----------
-=======
-/* for dashboard */
-
-
->>>>>>> origin/main
 (async function () {
   const session = await requireAuth();
   setTopbarUser(session.user_name);
 
-<<<<<<< HEAD
   // Initialize notifications on load
   fetchNotifications();
 
-=======
->>>>>>> origin/main
   try {
     const res  = await fetch("../php/dashboard.php");
     const data = await res.json();
@@ -146,10 +137,6 @@ document.addEventListener("click", (e) => {
         </div>`).join("");
     }
 
-<<<<<<< HEAD
-=======
-    
->>>>>>> origin/main
     // Quiz attempts
     const qContainer = document.getElementById("quiz-activity");
     if (data.quiz_attempts.length === 0) {

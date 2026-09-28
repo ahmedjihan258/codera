@@ -2,6 +2,7 @@
 session_start();
 header("Content-Type: application/json");
 require_once "db.php";
+require_once "module_access.php";
 
 if (!isset($_SESSION["user_id"])) {
     echo json_encode(["success" => false, "message" => "Not authenticated."]);
@@ -28,6 +29,17 @@ if ($lesson_id) {
 
     if (!$lesson) {
         echo json_encode(["success" => false, "message" => "Lesson not found."]);
+        exit;
+    }
+
+    if (!is_module_unlocked($conn, $user_id, (int)$lesson["course_id"], $lesson["module_name"])) {
+        $blocking = get_blocking_module($conn, (int)$lesson["course_id"], $lesson["module_name"]);
+        http_response_code(403);
+        echo json_encode([
+            "success" => false,
+            "code"    => "locked_module",
+            "message" => "Score " . QUIZ_PASS_PERCENT . "%+ on the \"" . $blocking . "\" quiz to unlock this module."
+        ]);
         exit;
     }
 
