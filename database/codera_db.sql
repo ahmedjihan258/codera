@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 06, 2026 at 04:43 PM
+-- Generation Time: Sep 26, 2026 at 12:24 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -104,7 +104,8 @@ CREATE TABLE `enrollments` (
 
 INSERT INTO `enrollments` (`id`, `user_id`, `course_id`, `enrolled_at`) VALUES
 (1, 1, 1, '2026-09-06 20:26:53'),
-(2, 1, 2, '2026-09-06 20:29:13');
+(2, 1, 2, '2026-09-06 20:29:13'),
+(3, 2, 1, '2026-09-21 19:26:04');
 
 -- --------------------------------------------------------
 
@@ -139,7 +140,38 @@ INSERT INTO `lessons` (`id`, `course_id`, `module_name`, `title`, `content`, `or
 (11, 2, 'Module 3: Async JS', 'Fetch API & JSON', '<h2>Fetch API</h2><p>Use <code>fetch()</code> to make HTTP requests to a server (your PHP files) without reloading the page.</p><pre><code>// GET request\nfetch(\"../php/courses.php\")\n  .then(response => response.json())\n  .then(data => {\n    console.log(data); // array of courses\n  })\n  .catch(err => console.error(err));\n\n// POST request\nfetch(\"../php/login.php\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ email, password })\n}).then(r => r.json()).then(data => {\n  if (data.success) window.location.href = \"dashboard.html\";\n});</code></pre>', 4),
 (12, 3, 'Module 1: PHP Basics', 'Introduction to PHP', '<h2>What is PHP?</h2><p>PHP (Hypertext Preprocessor) is a server-side scripting language designed for web development. It runs on the server (Apache/XAMPP) and generates HTML sent to the browser.</p><pre><code>&lt;?php\n  // Variables\n  $name = \"Alice\";\n  $age  = 21;\n  echo \"Hello, $name! You are $age years old.\";\n?&gt;</code></pre><h3>PHP in HTML</h3><p>You can mix PHP and HTML freely using <code>&lt;?php ... ?&gt;</code> tags.</p>', 1),
 (13, 3, 'Module 1: PHP Basics', 'PHP & MySQL', '<h2>Connecting PHP to MySQL</h2><p>Use <code>mysqli</code> (MySQL Improved) to connect your PHP scripts to a MySQL database.</p><pre><code>&lt;?php\n$conn = new mysqli(\"localhost\", \"root\", \"\", \"codera_db\");\n\nif ($conn-&gt;connect_error) {\n    die(\"Connection failed: \" . $conn-&gt;connect_error);\n}\n\n// Prepared statement (safe from SQL injection)\n$stmt = $conn-&gt;prepare(\"SELECT * FROM users WHERE email = ?\");\n$stmt-&gt;bind_param(\"s\", $email);\n$stmt-&gt;execute();\n$result = $stmt-&gt;get_result();\n?&gt;</code></pre>', 2),
-(14, 3, 'Module 2: PHP Sessions', 'PHP Sessions & Auth', '<h2>PHP Sessions</h2><p>Sessions let you store user data (like login status) across multiple pages.</p><pre><code>&lt;?php\nsession_start();\n\n// Store session data after login\n$_SESSION[\"user_id\"]   = $user[\"id\"];\n$_SESSION[\"user_name\"] = $user[\"full_name\"];\n\n// Check login on protected pages\nif (!isset($_SESSION[\"user_id\"])) {\n    header(\"Location: login.html\");\n    exit;\n}\n\n// Destroy session on logout\nsession_destroy();\nheader(\"Location: login.html\");\n?&gt;</code></pre>', 3);
+(14, 3, 'Module 2: PHP Sessions', 'PHP Sessions & Auth', '<h2>PHP Sessions</h2><p>Sessions let you store user data (like login status) across multiple pages.</p><pre><code>&lt;?php\nsession_start();\n\n// Store session data after login\n$_SESSION[\"user_id\"]   = $user[\"id\"];\n$_SESSION[\"user_name\"] = $user[\"full_name\"];\n\n// Check login on protected pages\nif (!isset($_SESSION[\"user_id\"])) {\n    header(\"Location: login.html\");\n    exit;\n}\n\n// Destroy session on logout\nsession_destroy();\nheader(\"Location: login.html\");\n?&gt;</code></pre>', 3),
+(15, 1, 'Module 2: CSS Fundamentals', 'CSS Padding', '', 3),
+(16, 1, 'Module 2: CSS Fundamentals', 'CSS padding', 'The CSS padding properties are used to generate space around an element\'s content, inside of any defined borders.\n<pre><code>div {\n  padding-top: 50px;\n  padding-right: 30px;\n  padding-bottom: 50px;\n  padding-left: 80px;\n}</code></pre>\n\nWith CSS, you have full control over the padding. There are properties for setting the padding for each side of an element (top, right, bottom, and left), and a shorthand property for setting all the padding properties in one declaration.\n\n', 8);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `is_read`, `created_at`) VALUES
+(1, 1, 'New Module/Lesson Uploaded', 'A new module/lesson \'CSS Padding\' (Module 2: CSS Fundamentals) was added to HTML & CSS!', 0, '2026-09-21 17:26:06'),
+(2, 2, 'New Module/Lesson Uploaded', 'A new module/lesson \'CSS Padding\' (Module 2: CSS Fundamentals) was added to HTML & CSS!', 1, '2026-09-21 17:26:06'),
+(3, 1, 'New Module/Lesson Uploaded', 'A new module/lesson \'CSS padding\' (Module 2: CSS Fundamentals) was added to HTML & CSS!', 0, '2026-09-21 17:28:17'),
+(4, 2, 'New Module/Lesson Uploaded', 'A new module/lesson \'CSS padding\' (Module 2: CSS Fundamentals) was added to HTML & CSS!', 1, '2026-09-21 17:28:17'),
+(5, 1, 'Module/Lesson Updated', 'The module/lesson \'CSS padding\' in HTML & CSS has been updated.', 0, '2026-09-21 18:42:31'),
+(6, 2, 'Module/Lesson Updated', 'The module/lesson \'CSS padding\' in HTML & CSS has been updated.', 1, '2026-09-21 18:42:31'),
+(7, 1, 'Module/Lesson Updated', 'The module/lesson \'CSS padding\' in HTML & CSS has been updated.', 0, '2026-09-21 18:43:52'),
+(8, 2, 'Module/Lesson Updated', 'The module/lesson \'CSS padding\' in HTML & CSS has been updated.', 1, '2026-09-21 18:43:52');
 
 -- --------------------------------------------------------
 
@@ -194,6 +226,7 @@ CREATE TABLE `progress` (
 CREATE TABLE `quizzes` (
   `id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
+  `module_name` varchar(150) DEFAULT NULL,
   `title` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -201,10 +234,18 @@ CREATE TABLE `quizzes` (
 -- Dumping data for table `quizzes`
 --
 
-INSERT INTO `quizzes` (`id`, `course_id`, `title`) VALUES
-(1, 1, 'HTML & CSS Quiz'),
-(2, 2, 'JavaScript Quiz'),
-(3, 3, 'PHP Quiz');
+INSERT INTO `quizzes` (`id`, `course_id`, `module_name`, `title`) VALUES
+(1, 1, NULL, 'HTML & CSS Quiz'),
+(2, 2, NULL, 'JavaScript Quiz'),
+(3, 3, NULL, 'PHP Quiz'),
+(4, 1, 'Module 1: HTML Basics', 'Module 1: HTML Basics Quiz'),
+(5, 1, 'Module 2: CSS Fundamentals', 'Module 2: CSS Fundamentals Quiz'),
+(6, 1, 'Module 3: Layouts', 'Module 3: Layouts Quiz'),
+(7, 2, 'Module 1: JS Basics', 'Module 1: JS Basics Quiz'),
+(8, 2, 'Module 2: DOM', 'Module 2: DOM Quiz'),
+(9, 2, 'Module 3: Async JS', 'Module 3: Async JS Quiz'),
+(10, 3, 'Module 1: PHP Basics', 'Module 1: PHP Basics Quiz'),
+(11, 3, 'Module 2: PHP Sessions', 'Module 2: PHP Sessions Quiz');
 
 -- --------------------------------------------------------
 
@@ -220,6 +261,14 @@ CREATE TABLE `quiz_attempts` (
   `total` int(11) NOT NULL,
   `attempted_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `quiz_attempts`
+--
+
+INSERT INTO `quiz_attempts` (`id`, `user_id`, `quiz_id`, `score`, `total`, `attempted_at`) VALUES
+(1, 2, 4, 4, 5, '2026-09-26 03:36:43'),
+(2, 2, 5, 1, 5, '2026-09-26 04:23:08');
 
 -- --------------------------------------------------------
 
@@ -257,7 +306,87 @@ INSERT INTO `quiz_questions` (`id`, `quiz_id`, `question`, `option_a`, `option_b
 (12, 3, 'Which function hashes a password securely in PHP?', 'md5()', 'sha1()', 'password_hash()', 'encrypt()', 'c'),
 (13, 3, 'How do you start a PHP session?', 'start_session()', 'session_start()', 'begin_session()', 'init_session()', 'b'),
 (14, 3, 'Which superglobal holds POST data?', '$_GET', '$_POST', '$_REQUEST', '$_FORM', 'b'),
-(15, 3, 'What is a prepared statement used for?', 'Styling output', 'Preventing SQL injection', 'Caching queries', 'Sorting results', 'b');
+(15, 3, 'What is a prepared statement used for?', 'Styling output', 'Preventing SQL injection', 'Caching queries', 'Sorting results', 'b'),
+(16, 4, 'Which element contains the visible content of an HTML page?', '<head>', '<title>', '<body>', '<meta>', 'c'),
+(17, 4, 'Which tag creates the largest heading?', '<h1>', '<h6>', '<head>', '<heading>', 'a'),
+(18, 4, 'Which attribute provides alternative text for an image?', 'title', 'src', 'caption', 'alt', 'd'),
+(19, 4, 'Which input type hides the characters a user types?', 'type=\"text\"', 'type=\"password\"', 'type=\"secret\"', 'type=\"hidden\"', 'b'),
+(20, 4, 'Which <form> attribute sets how the data is sent (GET or POST)?', 'action', 'target', 'method', 'name', 'c'),
+(21, 5, 'Which selector targets the element with id=\"menu\"?', '.menu', '#menu', 'menu', '*menu', 'b'),
+(22, 5, 'What is the correct box model order from the inside out?', 'margin, border, padding, content', 'content, border, padding, margin', 'padding, content, margin, border', 'content, padding, border, margin', 'd'),
+(23, 5, 'Which property adds space INSIDE an element, between its content and its border?', 'padding', 'margin', 'outline', 'border-spacing', 'a'),
+(24, 5, 'Which is correct CSS syntax?', 'body: color = black;', '{ body; color: black }', 'body { color: black; }', 'body { color = black }', 'c'),
+(25, 5, 'What does box-sizing: border-box do?', 'Width and height include padding and border', 'Removes the element\'s border', 'Adds the margin to the width', 'Turns the element into a flex container', 'a'),
+(26, 6, 'Which property aligns flex items along the main axis?', 'align-items', 'justify-content', 'flex-wrap', 'z-index', 'b'),
+(27, 6, 'Which declaration creates a grid container?', 'display: table', 'grid: container', 'position: grid', 'display: grid', 'd'),
+(28, 6, 'Which property defines the columns of a grid?', 'grid-columns', 'column-layout', 'grid-template-columns', 'grid-cols', 'c'),
+(29, 6, 'Which declaration lets flex items wrap onto multiple lines?', 'flex-wrap: wrap', 'flex-direction: wrap', 'justify-content: wrap', 'flex-grow: wrap', 'a'),
+(30, 6, 'In CSS Grid, what does the fr unit represent?', 'A fixed pixel size', 'A font-relative size', 'A frame rate', 'A fraction of the available space', 'd'),
+(31, 7, 'Which keyword declares a variable that cannot be reassigned?', 'var', 'const', 'let', 'static', 'b'),
+(32, 7, 'What does typeof \"hello\" return?', '\"text\"', '\"char\"', '\"string\"', '\"object\"', 'c'),
+(33, 7, 'Which operator checks both value and type equality?', '==', '===', '=', '!=', 'b'),
+(34, 7, 'What does a function return when it has no return statement?', 'null', '0', 'false', 'undefined', 'd'),
+(35, 7, 'Where can a variable declared with let inside a function be used?', 'Only inside the block or function where it is declared', 'Anywhere in the file', 'Only in other functions', 'Only in the global scope', 'a'),
+(36, 8, 'What does DOM stand for?', 'Data Output Method', 'Display Object Mode', 'Document Object Model', 'Document Order Map', 'c'),
+(37, 8, 'Which method returns the first element that matches a CSS selector?', 'querySelector()', 'getElementByCss()', 'selectFirst()', 'findElement()', 'a'),
+(38, 8, 'Which property sets the plain text of an element?', 'text', 'textContent', 'value', 'htmlText', 'b'),
+(39, 8, 'Which method attaches a click handler to an element?', 'attachClick()', 'onEvent()', 'listen()', 'addEventListener()', 'd'),
+(40, 8, 'Which method adds a new element as the last child of a parent?', 'insertFirst()', 'addChild()', 'appendChild()', 'pushChild()', 'c'),
+(41, 9, 'Which function makes a network request in modern browsers?', 'fetch()', 'request()', 'getData()', 'ajaxCall()', 'a'),
+(42, 9, 'What does fetch() return?', 'A string', 'A callback', 'An array', 'A Promise', 'd'),
+(43, 9, 'Which keyword pauses an async function until a Promise settles?', 'pause', 'await', 'wait', 'yield', 'b'),
+(44, 9, 'Which method converts a JavaScript object into a JSON string?', 'JSON.parse()', 'JSON.toString()', 'JSON.stringify()', 'JSON.encode()', 'c'),
+(45, 9, 'Which keyword must appear before a function that uses await?', 'defer', 'async', 'promise', 'await', 'b'),
+(46, 10, 'Which tags enclose PHP code?', '<script php>', '<% ... %>', '{php} ... {/php}', '<?php ... ?>', 'd'),
+(47, 10, 'Which statement outputs text in PHP?', 'echo', 'print_out', 'console.log', 'write', 'a'),
+(48, 10, 'Which is the correct way to open a MySQL connection with the mysqli extension?', 'mysql_connect($host)', 'connect_db($host)', 'new mysqli($host, $user, $pass, $db)', 'pdo_open($host)', 'c'),
+(49, 10, 'Which operator joins (concatenates) two strings in PHP?', '.', '+', '&', ',', 'a'),
+(50, 10, 'Which property gives the number of rows in a mysqli result?', '$result->count()', '$result->num_rows', '$result->length', '$result->size', 'b'),
+(51, 11, 'Which function checks a plain-text password against a stored hash?', 'password_check()', 'verify_hash()', 'hash_equals_password()', 'password_verify()', 'd'),
+(52, 11, 'Where is PHP session data kept between requests?', 'Only in the page URL', 'In the HTML source of each page', 'On the server, linked to the browser by a session ID cookie', 'Inside the CSS file', 'c'),
+(53, 11, 'Which function removes all data of the current session?', 'session_destroy()', 'session_end()', 'session_remove()', 'unset_session()', 'a'),
+(54, 11, 'Calling session_regenerate_id(true) after login helps prevent which attack?', 'SQL injection', 'Cross-site scripting', 'Password guessing', 'Session fixation', 'd'),
+(55, 11, 'Which superglobal array stores session variables?', '$_SERVER', '$_SESSION', '$_FILES', '$_ENV', 'b'),
+(56, 4, 'Which tag creates an ordered (numbered) list?', '<ul>', '<li>', '<ol>', '<dl>', 'c'),
+(57, 4, 'Which attribute uniquely identifies one element for CSS/JS targeting?', 'class', 'name', 'key', 'id', 'd'),
+(58, 4, 'Which HTML5 tag holds the main navigation links of a page?', '<nav>', '<header>', '<section>', '<aside>', 'a'),
+(59, 4, 'Inside a form, which input type creates a submit button?', 'type=\"button\"', 'type=\"submit\"', 'type=\"send\"', 'type=\"action\"', 'b'),
+(60, 5, 'Which unit is relative to the root element\'s font size?', 'em', 'px', 'rem', 'vh', 'c'),
+(61, 5, 'Which property controls the space OUTSIDE an element\'s border?', 'margin', 'padding', 'border', 'gap', 'a'),
+(62, 5, 'Which pseudo-class applies while the mouse pointer is over an element?', ':focus', ':hover', ':active', ':visited', 'b'),
+(63, 5, 'Which position value takes an element out of normal flow and places it relative to its nearest positioned ancestor?', 'static', 'relative', 'fixed', 'absolute', 'd'),
+(64, 6, 'Which flexbox property sets the direction items are laid out (row or column)?', 'align-content', 'flex-wrap', 'flex-direction', 'order', 'c'),
+(65, 6, 'Which CSS Grid property defines the size of rows?', 'grid-template-columns', 'grid-row-gap', 'grid-area', 'grid-template-rows', 'd'),
+(66, 6, 'Which flexbox property centers items along the cross axis?', 'align-items', 'justify-content', 'flex-basis', 'order', 'a'),
+(67, 6, 'Which value makes a flex item grow to fill available space?', 'flex-shrink: 1', 'flex-grow: 1', 'flex-basis: 1', 'order: 1', 'b'),
+(68, 7, 'Which keyword declares a block-scoped variable?', 'var', 'int', 'define', 'let', 'd'),
+(69, 7, 'Which function converts a string to an integer in JavaScript?', 'Number.round()', 'toInteger()', 'parseInt()', 'Math.int()', 'c'),
+(70, 7, 'What does typeof null return?', '\"object\"', '\"null\"', '\"undefined\"', '\"number\"', 'a'),
+(71, 7, 'What is a function that keeps access to its outer scope\'s variables even after that scope has finished called?', 'A callback', 'A closure', 'A promise', 'A prototype', 'b'),
+(72, 7, 'Which array method adds one or more items to the END of an array?', 'pop()', 'shift()', 'unshift()', 'push()', 'd'),
+(73, 8, 'Which method creates a brand-new element that isn\'t yet in the page?', 'document.newElement()', 'document.addElement()', 'document.createElement()', 'document.insertElement()', 'c'),
+(74, 8, 'Which property sets an element\'s inline CSS directly from JavaScript?', 'element.css', 'element.class', 'element.design', 'element.style', 'd'),
+(75, 8, 'Which method removes an element from the DOM?', 'element.remove()', 'element.delete()', 'element.destroy()', 'element.clear()', 'a'),
+(76, 8, 'Which method returns ALL elements that match a CSS selector, not just the first?', 'document.querySelector()', 'document.querySelectorAll()', 'document.getAll()', 'document.selectElements()', 'b'),
+(77, 9, 'Which fetch() response method parses the body as JSON?', 'response.text()', 'response.parse()', 'response.json()', 'response.data()', 'c'),
+(78, 9, 'Which HTTP method is typically used to CREATE a new resource?', 'POST', 'GET', 'DELETE', 'HEAD', 'a'),
+(79, 9, 'What does Promise.all() do?', 'Waits only for the first to resolve', 'Waits for every promise to resolve, or for one to reject', 'Runs the promises one at a time', 'Cancels every promise but the last', 'b'),
+(80, 9, 'Which status code range generally means a fetch request succeeded?', '300-399', '400-499', '500-599', '200-299', 'd'),
+(81, 10, 'Which array function returns the number of elements in an array?', 'length()', 'size()', 'count()', 'array_length()', 'c'),
+(82, 10, 'Which PHP superglobal holds data sent via the URL query string?', '$_POST', '$_REQUEST', '$_QUERY', '$_GET', 'd'),
+(83, 10, 'Which function opens a MySQL connection with the mysqli extension?', 'mysqli_connect()', 'mysql_open()', 'db_connect()', 'new_connection()', 'a'),
+(84, 10, 'Which operator checks value AND type equality in PHP?', '==', '===', '<>', 'eq', 'b'),
+(85, 11, 'Where must session_start() be called for a session to work correctly?', 'After the <body> tag', 'Only inside functions', 'Before any HTML output is sent', 'At the very end of the script', 'c'),
+(86, 11, 'Which superglobal stores server-side data for a logged-in user across pages?', '$_SESSION', '$_COOKIE', '$_ENV', '$_GLOBALS', 'a'),
+(87, 11, 'What is the main risk of storing a plain-text password instead of a hash?', 'It uses more storage space', 'Anyone with database access can read every user\'s password', 'It makes login slower', 'It breaks session_start()', 'b'),
+(88, 11, 'Besides session_destroy(), what should also be done to fully log a user out?', 'Call session_start() again', 'Restart the web server', 'Delete the user\'s row from the users table', 'Clear (unset) the $_SESSION array', 'd'),
+(89, 4, 'Which tag is used to embed an image in a page?', '<src>', '<img>', '<image>', '<pic>', 'b'),
+(90, 5, 'Which CSS property sets the background color of an element?', 'color', 'background-color', 'bg-color', 'background-fill', 'b'),
+(91, 6, 'Which flexbox property changes the order items appear in, without changing the HTML?', 'flex-order', 'position', 'order', 'flex-index', 'c'),
+(92, 8, 'Which method attaches to the DOM and copies an existing element, including its children?', 'element.copyNode()', 'element.cloneNode()', 'element.duplicate()', 'element.replicate()', 'b'),
+(93, 9, 'What kind of object does an async function always return?', 'A callback', 'An array', 'A Promise', 'A string', 'c'),
+(94, 10, 'Which PHP function checks whether a variable is empty?', 'is_empty()', 'empty()', 'null()', 'blank()', 'b'),
+(95, 11, 'Why should you never build a SQL query by directly inserting user input into the query string?', 'It runs slower than a prepared statement', 'It opens the door to SQL injection', 'PHP does not allow it', 'It only works with MySQL, not MariaDB', 'b');
 
 -- --------------------------------------------------------
 
@@ -270,6 +399,7 @@ CREATE TABLE `users` (
   `full_name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `role` enum('user','admin') NOT NULL DEFAULT 'user',
   `avatar` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
@@ -279,8 +409,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `avatar`, `bio`, `created_at`) VALUES
-(1, 'Ahmed Jihan', 'ahmedjihan@codera.com', '$2y$12$foVf6qS43WFxVoXQ8KkSIe8PPlxLtanld7.dvnAZj1g3ghPr/mMMi', NULL, NULL, '2026-09-06 20:23:51');
+INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `role`, `avatar`, `bio`, `created_at`) VALUES
+(1, 'Ahmed Jihan', 'ahmedjihan@codera.com', '$2y$12$foVf6qS43WFxVoXQ8KkSIe8PPlxLtanld7.dvnAZj1g3ghPr/mMMi', 'user', NULL, NULL, '2026-09-06 20:23:51'),
+(2, 'Mehesam Rahman', 'rmehesam@gmail.com', '$2y$10$n7AR92yKpBPLjfx2RBlPEe4PpBqV5HDyuqcXzQvB7N3DaQYu48qym', 'user', NULL, NULL, '2026-09-21 17:37:34'),
+(3, 'Admin', 'admin@codera.com', '$2b$12$iI9hiKVPyf9u16jBeSCjH.4.8aTmIM6KSwlcRcbqGKIH552na8icS', 'admin', NULL, NULL, '2026-09-21 18:08:22');
 
 --
 -- Indexes for dumped tables
@@ -321,6 +453,12 @@ ALTER TABLE `enrollments`
 ALTER TABLE `lessons`
   ADD PRIMARY KEY (`id`),
   ADD KEY `course_id` (`course_id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `problems`
@@ -391,13 +529,19 @@ ALTER TABLE `courses`
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `lessons`
 --
 ALTER TABLE `lessons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `problems`
@@ -415,25 +559,25 @@ ALTER TABLE `progress`
 -- AUTO_INCREMENT for table `quizzes`
 --
 ALTER TABLE `quizzes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `quiz_attempts`
 --
 ALTER TABLE `quiz_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `quiz_questions`
 --
 ALTER TABLE `quiz_questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

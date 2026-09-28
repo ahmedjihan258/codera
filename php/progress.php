@@ -2,6 +2,7 @@
 session_start();
 header("Content-Type: application/json");
 require_once "db.php";
+require_once "module_access.php";
 
 if (!isset($_SESSION["user_id"])) {
     echo json_encode(["success" => false, "message" => "Not authenticated."]);
@@ -29,8 +30,10 @@ if ($method === "GET") {
         $stmt->execute();
         $result  = $stmt->get_result();
         $lessons = [];
+        $unlockMap = get_module_unlock_map($conn, $user_id, $course_id);
         while ($row = $result->fetch_assoc()) {
             $row["completed"] = (bool)$row["completed"];
+            $row["locked"]    = !($unlockMap[$row["module_name"]] ?? true);
             $lessons[] = $row;
         }
 

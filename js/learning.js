@@ -2,6 +2,8 @@
 let allLessons      = [];
 let currentLessonId = null;
 let courseId        = null;
+let moduleQuizzes   = {};     // module_name -> quiz
+let quizUnlocked    = false;  // true when the student is enrolled
 
 (async function () {
   const session = await requireAuth();
@@ -27,12 +29,58 @@ let courseId        = null;
   document.getElementById("sidebar-course-title").textContent =
     data.lessons[0] ? data.lessons[0].module_name.replace(/Module \d+: /, "") + " course" : "Course";
 
-  renderSidebar();
+  // Module quizzes (shown at the end of each module in the sidebar)
+  await loadModuleQuizzes();
 
-  // Open first lesson or requested lesson
-  const firstId = currentLessonId || (allLessons[0] ? allLessons[0].id : null);
+  renderSidebar();
+  startCooldownTicker();
+
+  // Open the requested lesson, or the first unlocked one
+  const firstUnlocked = allLessons.find(l => !l.locked);
+  const firstId = currentLessonId || (firstUnlocked ? firstUnlocked.id : (allLessons[0] ? allLessons[0].id : null));
   if (firstId) openLesson(firstId);
 })();
+
+async function loadModuleQuizzes() {
+  try {
+    const qRes  = await fetch(`../php/quiz.php?course_id=${courseId}`);
+    const qData = await qRes.json();
+    if (qData.success) {
+      quizUnlocked = qData.enrolled;
+      moduleQuizzes = {};
+      qData.quizzes.forEach(q => { if (q.module_name && q.question_count > 0) moduleQuizzes[q.module_name] = q; });
+    }
+  } catch { /* the lessons work even if quizzes cannot be loaded */ }
+}
+
+function formatCooldown(seconds) {
+  const pad = n => String(n).padStart(2, "0");
+  const h = Math.floor(seconds / 3600), m = Math.floor((seconds % 3600) / 60), s = seconds % 60;
+  return `${pad(h)} : ${pad(m)} : ${pad(s)}`;
+}
+
+/* Ticks every visible ⏳ countdown down by one second, live. When one hits
+   zero, re-fetch quiz state from the server (source of truth for unlocking)
+   and re-render the sidebar. */
+let cooldownTickerStarted = false;
+function startCooldownTicker() {
+  if (cooldownTickerStarted) return;
+  cooldownTickerStarted = true;
+  setInterval(async () => {
+    let expired = false;
+    document.querySelectorAll(".cooldown-timer").forEach(el => {
+      const remaining = Math.max(0, parseInt(el.dataset.remaining, 10) - 1);
+      el.dataset.remaining = remaining;
+      if (remaining <= 0) { expired = true; return; }
+      const textEl = el.querySelector(".cooldown-text");
+      if (textEl) textEl.textContent = formatCooldown(remaining);
+    });
+    if (expired) {
+      await loadModuleQuizzes();
+      renderSidebar();
+    }
+  }, 1000);
+}
 
 function renderSidebar() {
   const container = document.getElementById("lesson-list-container");
@@ -45,9 +93,13 @@ function renderSidebar() {
   });
 
   container.innerHTML = Object.entries(groups).map(([mod, lessons]) => `
-    <div class="module-group">
-      <div class="module-name">${mod}</div>
-      ${lessons.map(l => `
+    <div class="module-group" style="${lessons[0].locked ? "opacity:.6;" : ""}">
+      <div class="module-name">${lessons[0].locked ? "🔒 " : ""}${mod}</div>
+      ${lessons.map(l => l.locked ? `
+        <div class="lesson-item" style="cursor:not-allowed;" title="Pass the previous module's quiz to unlock">
+          <div class="lesson-check">🔒</div>
+          <span>${l.title}</span>
+        </div>` : `
         <div class="lesson-item ${l.completed ? "completed" : ""} ${l.id === currentLessonId ? "active" : ""}"
              id="sidebar-item-${l.id}" onclick="openLesson(${l.id})">
           <div class="lesson-check ${l.completed ? "done" : ""}">
@@ -55,7 +107,37 @@ function renderSidebar() {
           </div>
           <span>${l.title}</span>
         </div>`).join("")}
+      ${moduleQuizItem(mod)}
     </div>`).join("");
+}
+
+function moduleQuizItem(mod) {
+  const q = moduleQuizzes[mod];
+  if (!q) return "";
+
+  if (!quizUnlocked || q.locked) {
+    const reason = !quizUnlocked ? "Enroll in this course to take the quiz" : q.locked_reason;
+    return `
+      <div class="lesson-item" style="cursor:not-allowed;opacity:.65;" title="${reason}">
+        <div class="lesson-check">🔒</div>
+        <span>Module Quiz</span>
+      </div>`;
+  }
+  if (q.cooldown_seconds > 0) {
+    const secs = Math.max(0, Math.floor(q.cooldown_seconds));
+    return `
+      <div class="lesson-item cooldown-timer" data-remaining="${secs}" style="cursor:not-allowed;opacity:.65;" title="You didn't pass last time — try again later">
+        <div class="lesson-check">⏳</div>
+        <span>Module Quiz · retry in <span class="cooldown-text">${formatCooldown(secs)}</span></span>
+      </div>`;
+  }
+  const best = q.best_percent !== null ? ` · ${q.passed ? "✓" : "best"} ${q.best_percent}%` : "";
+  return `
+    <div class="lesson-item" style="font-weight:700;"
+         onclick="window.location.href='quiz.html?course=${courseId}&quiz=${q.id}'">
+      <div class="lesson-check">📝</div>
+      <span>Module Quiz${best}</span>
+    </div>`;
 }
 
 async function openLesson(id) {
@@ -69,7 +151,17 @@ async function openLesson(id) {
   // Fetch lesson content
   const res  = await fetch(`../php/lessons.php?lesson_id=${id}`);
   const data = await res.json();
-  if (!data.success) return;
+
+  if (!data.success) {
+    if (data.code === "locked_module") {
+      document.getElementById("lesson-title").textContent = "🔒 Module locked";
+      document.getElementById("lesson-module-badge").textContent = "";
+      document.getElementById("lesson-body").innerHTML =
+        `<p class="text-muted">${data.message}</p>`;
+      ["prev-btn", "next-btn", "complete-btn"].forEach(id => document.getElementById(id).disabled = true);
+    }
+    return;
+  }
 
   const l = data.lesson;
 
