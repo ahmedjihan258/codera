@@ -6,7 +6,7 @@ const adminCache = {
   lessons: {},
   problems: {},
   quizzes: {},
-  quizQuestions: {},
+  quizQuestions: {}
 };
 
 let currentQuestionsQuizId = null;
@@ -20,7 +20,7 @@ const BLOCK_LABELS = {
   paragraph: "Paragraph",
   code: "Code Block",
   list: "Bullet List",
-  html: "Custom HTML",
+  html: "Custom HTML"
 };
 
 function escapeHtml(str) {
@@ -43,10 +43,7 @@ function removeContentBlock(index) {
 function moveContentBlock(index, direction) {
   const target = index + direction;
   if (target < 0 || target >= contentBlocks.length) return;
-  [contentBlocks[index], contentBlocks[target]] = [
-    contentBlocks[target],
-    contentBlocks[index],
-  ];
+  [contentBlocks[index], contentBlocks[target]] = [contentBlocks[target], contentBlocks[index]];
   renderContentBlocks();
 }
 
@@ -59,69 +56,61 @@ function renderContentBlocks() {
   if (!container) return;
 
   if (contentBlocks.length === 0) {
-    container.innerHTML =
-      '<div class="block-empty-state">No content blocks yet. Add a Heading, Paragraph, Code Block, or Bullet List below.</div>';
+    container.innerHTML = '<div class="block-empty-state">No content blocks yet. Add a Heading, Paragraph, Code Block, or Bullet List below.</div>';
     return;
   }
 
-  container.innerHTML = contentBlocks
-    .map((block, i) => {
-      const controls = `
+  container.innerHTML = contentBlocks.map((block, i) => {
+    const controls = `
       <div class="content-block-actions">
         <button type="button" onclick="moveContentBlock(${i}, -1)" title="Move up">↑</button>
         <button type="button" onclick="moveContentBlock(${i}, 1)" title="Move down">↓</button>
         <button type="button" onclick="removeContentBlock(${i})" title="Remove">✕</button>
       </div>`;
-      const head = `<div class="content-block-head"><span class="content-block-tag">${BLOCK_LABELS[block.type] || block.type}</span>${controls}</div>`;
-      const escapedValue = block.value.replace(/"/g, "&quot;");
+    const head = `<div class="content-block-head"><span class="content-block-tag">${BLOCK_LABELS[block.type] || block.type}</span>${controls}</div>`;
+    const escapedValue = block.value.replace(/"/g, "&quot;");
 
-      let field = "";
-      if (block.type === "heading") {
-        field = `<input type="text" value="${escapedValue.replace(/</g, "&lt;")}" placeholder="Heading text" oninput="updateContentBlockValue(${i}, this.value)" />`;
-      } else if (block.type === "paragraph") {
-        field = `<textarea rows="3" placeholder="Paragraph text" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>
+    let field = "";
+    if (block.type === "heading") {
+      field = `<input type="text" value="${escapedValue.replace(/</g, "&lt;")}" placeholder="Heading text" oninput="updateContentBlockValue(${i}, this.value)" />`;
+    } else if (block.type === "paragraph") {
+      field = `<textarea rows="3" placeholder="Paragraph text" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>
         <div class="content-block-hint">Plain text, or simple inline HTML like &lt;strong&gt;/&lt;code&gt; if needed.</div>`;
-      } else if (block.type === "code") {
-        field = `<textarea rows="6" class="code-editor" placeholder="Paste code here — no need to escape &lt; &gt; or add <pre><code> tags, that's automatic" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>`;
-      } else if (block.type === "list") {
-        field = `<textarea rows="4" placeholder="One item per line" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>
+    } else if (block.type === "code") {
+      field = `<textarea rows="6" class="code-editor" placeholder="Paste code here — no need to escape &lt; &gt; or add <pre><code> tags, that's automatic" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>`;
+    } else if (block.type === "list") {
+      field = `<textarea rows="4" placeholder="One item per line" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>
         <div class="content-block-hint">Each line becomes one bullet point.</div>`;
-      } else {
-        field = `<textarea rows="4" placeholder="Raw HTML, inserted as-is" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>`;
-      }
+    } else {
+      field = `<textarea rows="4" placeholder="Raw HTML, inserted as-is" oninput="updateContentBlockValue(${i}, this.value)">${escapeHtml(block.value)}</textarea>`;
+    }
 
-      return `<div class="content-block">${head}${field}</div>`;
-    })
-    .join("");
+    return `<div class="content-block">${head}${field}</div>`;
+  }).join("");
 }
 
 // Turns the structured blocks into the same kind of HTML the lesson viewer
 // already expects (h2/p/pre-code/ul-li), so new lessons render exactly like
 // the seeded ones instead of relying on admins hand-writing tags.
 function composeLessonContent() {
-  return contentBlocks
-    .map((block) => {
-      switch (block.type) {
-        case "heading":
-          return `<h2>${block.value}</h2>`;
-        case "paragraph":
-          return `<p>${block.value}</p>`;
-        case "code":
-          return `<pre><code>${escapeHtml(block.value)}</code></pre>`;
-        case "list": {
-          const items = block.value
-            .split("\n")
-            .map((l) => l.trim())
-            .filter(Boolean);
-          return `<ul>${items.map((l) => `<li>${l}</li>`).join("")}</ul>`;
-        }
-        case "html":
-          return block.value;
-        default:
-          return "";
+  return contentBlocks.map(block => {
+    switch (block.type) {
+      case "heading":
+        return `<h2>${block.value}</h2>`;
+      case "paragraph":
+        return `<p>${block.value}</p>`;
+      case "code":
+        return `<pre><code>${escapeHtml(block.value)}</code></pre>`;
+      case "list": {
+        const items = block.value.split("\n").map(l => l.trim()).filter(Boolean);
+        return `<ul>${items.map(l => `<li>${l}</li>`).join("")}</ul>`;
       }
-    })
-    .join("\n");
+      case "html":
+        return block.value;
+      default:
+        return "";
+    }
+  }).join("\n");
 }
 
 // Reverse of composeLessonContent(): reconstructs blocks from an existing
@@ -133,10 +122,9 @@ function parseContentToBlocks(html) {
   wrapper.innerHTML = html || "";
   const blocks = [];
 
-  wrapper.childNodes.forEach((node) => {
+  wrapper.childNodes.forEach(node => {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.textContent.trim())
-        blocks.push({ type: "html", value: node.textContent });
+      if (node.textContent.trim()) blocks.push({ type: "html", value: node.textContent });
       return;
     }
     if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -150,9 +138,7 @@ function parseContentToBlocks(html) {
       const codeEl = node.querySelector("code");
       blocks.push({ type: "code", value: (codeEl || node).textContent });
     } else if (tag === "ul" || tag === "ol") {
-      const items = Array.from(node.querySelectorAll("li")).map(
-        (li) => li.innerHTML,
-      );
+      const items = Array.from(node.querySelectorAll("li")).map(li => li.innerHTML);
       blocks.push({ type: "list", value: items.join("\n") });
     } else {
       blocks.push({ type: "html", value: node.outerHTML });
@@ -167,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCourses();
   loadLessons();
   loadQuizzes();
+  loadResults();
   loadProblems();
   loadUsers();
 
@@ -186,19 +173,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------- TAB NAVIGATION ----------
 function switchTab(tabName) {
-  document
-    .querySelectorAll("section[id^='tab-']")
-    .forEach((sec) => (sec.style.display = "none"));
-  document
-    .querySelectorAll(".admin-nav-item")
-    .forEach((item) => item.classList.remove("active"));
+  document.querySelectorAll("section[id^='tab-']").forEach(sec => sec.style.display = "none");
+  document.querySelectorAll(".admin-nav-item").forEach(item => item.classList.remove("active"));
 
   const targetTab = document.getElementById(`tab-${tabName}`);
   if (targetTab) targetTab.style.display = "block";
 
-  const activeBtn = Array.from(
-    document.querySelectorAll(".admin-nav-item"),
-  ).find((el) => el.textContent.trim().toLowerCase() === tabName.toLowerCase());
+  const activeBtn = Array.from(document.querySelectorAll(".admin-nav-item"))
+    .find(el => el.textContent.trim().toLowerCase() === tabName.toLowerCase());
   if (activeBtn) activeBtn.classList.add("active");
 }
 
@@ -246,13 +228,11 @@ async function loadCourseModules(courseId, selectedModule = "") {
   if (!courseId) return;
 
   try {
-    const res = await fetch(
-      `../php/admin.php?action=get_modules&course_id=${courseId}`,
-    );
+    const res = await fetch(`../php/admin.php?action=get_modules&course_id=${courseId}`);
     const data = await res.json();
 
     if (data.success && Array.isArray(data.modules)) {
-      data.modules.forEach((mod) => {
+      data.modules.forEach(mod => {
         const opt = document.createElement("option");
         opt.value = mod;
         opt.textContent = mod;
@@ -261,9 +241,7 @@ async function loadCourseModules(courseId, selectedModule = "") {
     }
 
     if (selectedModule) {
-      const exists = Array.from(moduleSelect.options).some(
-        (opt) => opt.value === selectedModule,
-      );
+      const exists = Array.from(moduleSelect.options).some(opt => opt.value === selectedModule);
       if (exists) {
         moduleSelect.value = selectedModule;
       } else {
@@ -308,16 +286,15 @@ async function loadCourses() {
     const tbody = document.getElementById("tbl-courses");
     const courseSelect = document.getElementById("l-course-id");
     const quizCourseSelect = document.getElementById("q-course-id");
+    const resultsCourseFilter = document.getElementById("res-course-filter");
 
     if (tbody) tbody.innerHTML = "";
-    if (courseSelect)
-      courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
-    if (quizCourseSelect)
-      quizCourseSelect.innerHTML =
-        '<option value="">-- Select Course --</option>';
+    if (courseSelect) courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+    if (quizCourseSelect) quizCourseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+    if (resultsCourseFilter) resultsCourseFilter.innerHTML = '<option value="">All Courses</option>';
 
     if (data.success && data.courses) {
-      data.courses.forEach((c) => {
+      data.courses.forEach(c => {
         adminCache.courses[c.id] = c;
 
         if (tbody) {
@@ -326,7 +303,7 @@ async function loadCourses() {
             <td>${c.icon || "🌐"}</td>
             <td><strong>${escapeHtml(c.title)}</strong></td>
             <td><span class="badge badge-beginner">${escapeHtml(c.level)}</span></td>
-            <td>${escapeHtml(c.duration || "")}</td>
+            <td>${escapeHtml(c.duration || '')}</td>
             <td>${c.lesson_count || 0}</td>
             <td class="action-btns">
               <button class="btn btn-outline-dark btn-sm" onclick="editCourse(${c.id})">Edit</button>
@@ -348,6 +325,13 @@ async function loadCourses() {
           qOpt.value = c.id;
           qOpt.textContent = c.title;
           quizCourseSelect.appendChild(qOpt);
+        }
+
+        if (resultsCourseFilter) {
+          const rOpt = document.createElement("option");
+          rOpt.value = c.id;
+          rOpt.textContent = c.title;
+          resultsCourseFilter.appendChild(rOpt);
         }
       });
     }
@@ -390,14 +374,14 @@ async function saveCourse() {
     description: document.getElementById("c-desc").value.trim(),
     level: document.getElementById("c-level").value,
     duration: document.getElementById("c-duration").value.trim(),
-    icon: document.getElementById("c-icon").value.trim(),
+    icon: document.getElementById("c-icon").value.trim()
   };
 
   try {
     const res = await fetch("../php/admin.php?action=save_course", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
 
     const data = await res.json();
@@ -414,11 +398,8 @@ async function saveCourse() {
 }
 
 async function deleteCourse(id) {
-  if (!confirm("Are you sure? This will delete all associated lessons!"))
-    return;
-  const res = await fetch(`../php/admin.php?action=delete_course&id=${id}`, {
-    method: "POST",
-  });
+  if (!confirm("Are you sure? This will delete all associated lessons!")) return;
+  const res = await fetch(`../php/admin.php?action=delete_course&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     loadCourses();
@@ -439,7 +420,7 @@ async function loadLessons() {
 
     tbody.innerHTML = "";
     if (data.success && data.lessons) {
-      data.lessons.forEach((l) => {
+      data.lessons.forEach(l => {
         adminCache.lessons[l.id] = l;
 
         const tr = document.createElement("tr");
@@ -478,9 +459,7 @@ function openLessonModal() {
   renderContentBlocks();
 
   const moduleSelect = document.getElementById("l-module-select");
-  if (moduleSelect)
-    moduleSelect.innerHTML =
-      '<option value="">-- Select Course First --</option>';
+  if (moduleSelect) moduleSelect.innerHTML = '<option value="">-- Select Course First --</option>';
 
   const customInput = document.getElementById("l-module-custom");
   if (customInput) {
@@ -524,9 +503,7 @@ async function saveLesson() {
   }
 
   if (!course_id || !module_name || !title) {
-    alert(
-      "Please select a Course, enter/select a Module name, and provide a Lesson Title.",
-    );
+    alert("Please select a Course, enter/select a Module name, and provide a Lesson Title.");
     return;
   }
 
@@ -537,13 +514,13 @@ async function saveLesson() {
     module_name,
     title,
     order_num,
-    content,
+    content
   };
 
   const res = await fetch("../php/admin.php?action=save_lesson", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
 
   const data = await res.json();
@@ -558,9 +535,7 @@ async function saveLesson() {
 
 async function deleteLesson(id) {
   if (!confirm("Are you sure you want to delete this lesson?")) return;
-  const res = await fetch(`../php/admin.php?action=delete_lesson&id=${id}`, {
-    method: "POST",
-  });
+  const res = await fetch(`../php/admin.php?action=delete_lesson&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     loadLessons();
@@ -576,22 +551,18 @@ async function loadQuizModules(courseId, selectedModule = "") {
   if (!moduleSelect) return;
 
   if (!courseId) {
-    moduleSelect.innerHTML =
-      '<option value="">-- Select Course First --</option>';
+    moduleSelect.innerHTML = '<option value="">-- Select Course First --</option>';
     return;
   }
 
-  moduleSelect.innerHTML =
-    '<option value="">-- Final Course Quiz (no module) --</option>';
+  moduleSelect.innerHTML = '<option value="">-- Final Course Quiz (no module) --</option>';
 
   try {
-    const res = await fetch(
-      `../php/admin.php?action=get_modules&course_id=${courseId}`,
-    );
+    const res = await fetch(`../php/admin.php?action=get_modules&course_id=${courseId}`);
     const data = await res.json();
 
     if (data.success && Array.isArray(data.modules)) {
-      data.modules.forEach((mod) => {
+      data.modules.forEach(mod => {
         const opt = document.createElement("option");
         opt.value = mod;
         opt.textContent = mod;
@@ -617,17 +588,15 @@ async function loadQuizzes() {
 
     tbody.innerHTML = "";
     if (data.success && data.quizzes) {
-      data.quizzes.forEach((q) => {
+      data.quizzes.forEach(q => {
         adminCache.quizzes[q.id] = q;
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${escapeHtml(q.course_title || "N/A")}</td>
-          <td>${
-            q.module_name
+          <td>${q.module_name
               ? `<span class="badge badge-beginner">${escapeHtml(q.module_name)}</span>`
-              : `<span class="badge badge-hard">Final Quiz</span>`
-          }</td>
+              : `<span class="badge badge-hard">Final Quiz</span>`}</td>
           <td><strong>${escapeHtml(q.title)}</strong></td>
           <td>${q.question_count}</td>
           <td class="action-btns">
@@ -651,9 +620,7 @@ function openQuizModal() {
   document.getElementById("quiz-modal-title").textContent = "Add Quiz";
 
   const moduleSelect = document.getElementById("q-module-select");
-  if (moduleSelect)
-    moduleSelect.innerHTML =
-      '<option value="">-- Select Course First --</option>';
+  if (moduleSelect) moduleSelect.innerHTML = '<option value="">-- Select Course First --</option>';
 
   openModal("modal-quiz");
 }
@@ -672,10 +639,10 @@ async function editQuiz(id) {
 }
 
 async function saveQuiz() {
-  const id = document.getElementById("q-id").value;
-  const course_id = document.getElementById("q-course-id").value;
+  const id          = document.getElementById("q-id").value;
+  const course_id   = document.getElementById("q-course-id").value;
   const module_name = document.getElementById("q-module-select").value; // "" => final course quiz
-  const title = document.getElementById("q-title").value.trim();
+  const title       = document.getElementById("q-title").value.trim();
 
   if (!course_id || !title) {
     alert("Please select a Course and provide a Quiz Title.");
@@ -687,13 +654,13 @@ async function saveQuiz() {
     id: id || undefined,
     course_id,
     module_name,
-    title,
+    title
   };
 
   const res = await fetch("../php/admin.php?action=save_quiz", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
 
   const data = await res.json();
@@ -706,15 +673,8 @@ async function saveQuiz() {
 }
 
 async function deleteQuiz(id) {
-  if (
-    !confirm(
-      "Are you sure? This will delete all of this quiz's questions and every student's attempts on it!",
-    )
-  )
-    return;
-  const res = await fetch(`../php/admin.php?action=delete_quiz&id=${id}`, {
-    method: "POST",
-  });
+  if (!confirm("Are you sure? This will delete all of this quiz's questions and every student's attempts on it!")) return;
+  const res = await fetch(`../php/admin.php?action=delete_quiz&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     loadQuizzes();
@@ -728,9 +688,7 @@ async function openQuestionsModal(quizId) {
   currentQuestionsQuizId = quizId;
   const q = adminCache.quizzes[quizId];
 
-  document.getElementById("quiz-questions-title").textContent = q
-    ? `Questions — ${q.title}`
-    : "Quiz Questions";
+  document.getElementById("quiz-questions-title").textContent = q ? `Questions — ${q.title}` : "Quiz Questions";
   document.getElementById("qq-quiz-id").value = quizId;
 
   resetQuestionForm();
@@ -743,17 +701,14 @@ async function loadQuizQuestions(quizId) {
   if (!list) return;
 
   try {
-    const res = await fetch(
-      `../php/admin.php?action=get_quiz_questions&quiz_id=${quizId}`,
-    );
+    const res = await fetch(`../php/admin.php?action=get_quiz_questions&quiz_id=${quizId}`);
     const data = await res.json();
     adminCache.quizQuestions = {};
 
     if (data.success && data.questions && data.questions.length) {
-      list.innerHTML = data.questions
-        .map((qq, i) => {
-          adminCache.quizQuestions[qq.id] = qq;
-          return `
+      list.innerHTML = data.questions.map((qq, i) => {
+        adminCache.quizQuestions[qq.id] = qq;
+        return `
           <div class="content-block">
             <div class="content-block-head">
               <span class="content-block-tag">Q${i + 1} · Correct: ${escapeHtml((qq.correct_option || "").toUpperCase())}</span>
@@ -768,11 +723,9 @@ async function loadQuizQuestions(quizId) {
               C) ${escapeHtml(qq.option_c)} &nbsp;·&nbsp; D) ${escapeHtml(qq.option_d)}
             </div>
           </div>`;
-        })
-        .join("");
+      }).join("");
     } else {
-      list.innerHTML =
-        '<div class="block-empty-state">No questions yet. Add the first one below.</div>';
+      list.innerHTML = '<div class="block-empty-state">No questions yet. Add the first one below.</div>';
     }
   } catch (err) {
     console.error("Error loading quiz questions:", err);
@@ -813,23 +766,16 @@ function cancelQuestionEdit() {
 }
 
 async function saveQuizQuestion() {
-  const id = document.getElementById("qq-id").value;
-  const quiz_id = document.getElementById("qq-quiz-id").value;
-  const question = document.getElementById("qq-question").value.trim();
-  const option_a = document.getElementById("qq-option-a").value.trim();
-  const option_b = document.getElementById("qq-option-b").value.trim();
-  const option_c = document.getElementById("qq-option-c").value.trim();
-  const option_d = document.getElementById("qq-option-d").value.trim();
+  const id             = document.getElementById("qq-id").value;
+  const quiz_id        = document.getElementById("qq-quiz-id").value;
+  const question       = document.getElementById("qq-question").value.trim();
+  const option_a       = document.getElementById("qq-option-a").value.trim();
+  const option_b       = document.getElementById("qq-option-b").value.trim();
+  const option_c       = document.getElementById("qq-option-c").value.trim();
+  const option_d       = document.getElementById("qq-option-d").value.trim();
   const correct_option = document.getElementById("qq-correct").value;
 
-  if (
-    !quiz_id ||
-    !question ||
-    !option_a ||
-    !option_b ||
-    !option_c ||
-    !option_d
-  ) {
+  if (!quiz_id || !question || !option_a || !option_b || !option_c || !option_d) {
     alert("Please fill in the question and all four options.");
     return;
   }
@@ -843,13 +789,13 @@ async function saveQuizQuestion() {
     option_b,
     option_c,
     option_d,
-    correct_option,
+    correct_option
   };
 
   const res = await fetch("../php/admin.php?action=save_quiz_question", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
 
   const data = await res.json();
@@ -864,16 +810,92 @@ async function saveQuizQuestion() {
 
 async function deleteQuizQuestion(id) {
   if (!confirm("Delete this question?")) return;
-  const res = await fetch(
-    `../php/admin.php?action=delete_quiz_question&id=${id}`,
-    { method: "POST" },
-  );
+  const res = await fetch(`../php/admin.php?action=delete_quiz_question&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     await loadQuizQuestions(currentQuestionsQuizId);
     loadQuizzes();
   } else {
     alert(data.message || "Failed to delete question.");
+  }
+}
+
+// ---------- RESULTS & ANALYTICS ----------
+let resultsDebounceTimer = null;
+function debouncedLoadResults() {
+  clearTimeout(resultsDebounceTimer);
+  resultsDebounceTimer = setTimeout(loadResults, 350);
+}
+
+async function loadResults() {
+  const courseFilter = document.getElementById("res-course-filter");
+  const studentFilter = document.getElementById("res-student-filter");
+  const course_id = courseFilter ? courseFilter.value : "";
+  const student = studentFilter ? studentFilter.value.trim() : "";
+
+  await loadResultsSummary(course_id, student);
+
+  const tbody = document.getElementById("tbl-results");
+  if (!tbody) return;
+
+  try {
+    const params = new URLSearchParams({ action: "get_quiz_results" });
+    if (course_id) params.set("course_id", course_id);
+    if (student) params.set("student", student);
+
+    const res = await fetch(`../php/admin.php?${params.toString()}`);
+    const data = await res.json();
+
+    tbody.innerHTML = "";
+    if (data.success && data.results && data.results.length) {
+      data.results.forEach(r => {
+        const when = r.attempted_at ? new Date(r.attempted_at.replace(" ", "T")).toLocaleString() : "N/A";
+        const resultBadge = r.passed
+          ? `<span class="badge badge-beginner">Passed</span>`
+          : `<span class="badge badge-hard">Failed</span>`;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(r.student_name)}</strong><div class="text-muted text-sm">${escapeHtml(r.student_email)}</div></td>
+          <td>${escapeHtml(r.course_title || "N/A")}</td>
+          <td>${escapeHtml(r.quiz_title)}${r.module_name ? `<div class="text-muted text-sm">${escapeHtml(r.module_name)}</div>` : ""}</td>
+          <td>${r.score} / ${r.total} <span class="text-muted text-sm">(${r.percent}%)</span></td>
+          <td>${resultBadge}</td>
+          <td class="text-muted text-sm">${when}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      const emptyMsg = student || course_id ? "No quiz attempts match this filter." : "No quiz attempts yet.";
+      tbody.innerHTML = `<tr><td colspan="6" class="text-muted" style="text-align:center;padding:24px;">${emptyMsg}</td></tr>`;
+    }
+  } catch (err) {
+    console.error("Error loading quiz results:", err);
+  }
+}
+
+async function loadResultsSummary(course_id = "", student = "") {
+  try {
+    const params = new URLSearchParams({ action: "get_results_summary" });
+    if (course_id) params.set("course_id", course_id);
+    if (student) params.set("student", student);
+
+    const res = await fetch(`../php/admin.php?${params.toString()}`);
+    const data = await res.json();
+
+    if (data.success && data.summary) {
+      const totalVal = document.getElementById("res-total-val");
+      const studentsVal = document.getElementById("res-students-val");
+      const avgVal = document.getElementById("res-avg-val");
+      const passVal = document.getElementById("res-pass-val");
+
+      if (totalVal) totalVal.textContent = data.summary.total_attempts;
+      if (studentsVal) studentsVal.textContent = data.summary.unique_students;
+      if (avgVal) avgVal.textContent = `${data.summary.average_percent}%`;
+      if (passVal) passVal.textContent = `${data.summary.pass_rate}%`;
+    }
+  } catch (err) {
+    console.error("Error loading results summary:", err);
   }
 }
 
@@ -887,7 +909,7 @@ async function loadProblems() {
 
     tbody.innerHTML = "";
     if (data.success && data.problems) {
-      data.problems.forEach((p) => {
+      data.problems.forEach(p => {
         adminCache.problems[p.id] = p;
 
         const tr = document.createElement("tr");
@@ -947,13 +969,13 @@ async function saveProblem() {
     example_input: document.getElementById("p-in").value,
     example_output: document.getElementById("p-out").value,
     hint: document.getElementById("p-hint").value,
-    solution: document.getElementById("p-sol").value,
+    solution: document.getElementById("p-sol").value
   };
 
   const res = await fetch("../php/admin.php?action=save_problem", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
 
   const data = await res.json();
@@ -968,9 +990,7 @@ async function saveProblem() {
 
 async function deleteProblem(id) {
   if (!confirm("Are you sure you want to delete this problem?")) return;
-  const res = await fetch(`../php/admin.php?action=delete_problem&id=${id}`, {
-    method: "POST",
-  });
+  const res = await fetch(`../php/admin.php?action=delete_problem&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     loadProblems();
@@ -990,7 +1010,7 @@ async function loadUsers() {
 
     tbody.innerHTML = "";
     if (data.success && data.users) {
-      data.users.forEach((u) => {
+      data.users.forEach(u => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${u.id}</td>
@@ -1019,7 +1039,7 @@ async function updateUserRole(id, role) {
   const res = await fetch("../php/admin.php?action=update_user_role", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, role }),
+    body: JSON.stringify({ id, role })
   });
   const data = await res.json();
   if (!data.success) alert(data.message || "Failed to update role.");
@@ -1027,9 +1047,7 @@ async function updateUserRole(id, role) {
 
 async function deleteUser(id) {
   if (!confirm("Are you sure you want to delete this user?")) return;
-  const res = await fetch(`../php/admin.php?action=delete_user&id=${id}`, {
-    method: "POST",
-  });
+  const res = await fetch(`../php/admin.php?action=delete_user&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
     loadUsers();
@@ -1041,7 +1059,7 @@ async function deleteUser(id) {
 
 // Helper utility function to prevent XSS and broken HTML render in tables
 function escapeHtml(str) {
-  if (!str) return "";
+  if (!str) return '';
   return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

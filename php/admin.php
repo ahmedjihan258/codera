@@ -3,6 +3,7 @@
 session_start();
 header('Content-Type: application/json');
 require_once 'db.php';
+require_once 'module_access.php';
 
 // Check if user is logged in and is an admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -365,6 +366,100 @@ if ($action === 'get_quiz_questions') {
     $stmt->bind_param("i", $quiz_id);
     $stmt->execute();
     echo json_encode(["success" => true, "questions" => $stmt->get_result()->fetch_all(MYSQLI_ASSOC)]);
+    exit();
+}
+
+if ($action === 'get_quiz_results') {
+    $course_id = $_GET['course_id'] ?? null;
+    $quiz_id   = $_GET['quiz_id'] ?? null;
+    $student   = trim($_GET['student'] ?? '');
+
+    $sql = "
+        SELECT qa.id, qa.user_id, qa.quiz_id, qa.score, qa.total, qa.attempted_at,
+               u.full_name AS student_name, u.email AS student_email,
+               q.title AS quiz_title, q.module_name, q.course_id,
+               c.title AS course_title
+        FROM quiz_attempts qa
+        JOIN users u    ON u.id = qa.user_id
+        JOIN quizzes q  ON q.id = qa.quiz_id
+        JOIN courses c  ON c.id = q.course_id
+        WHERE 1=1
+    ";
+    $types = "";
+    $params = [];
+    if ($course_id) { $sql .= " AND q.course_id = ?"; $types .= "i"; $params[] = $course_id; }
+    if ($quiz_id)   { $sql .= " AND qa.quiz_id = ?";   $types .= "i"; $params[] = $quiz_id; }
+    if ($student !== '') {
+        $sql .= " AND (u.full_name LIKE ? OR u.email LIKE ?)";
+        $types .= "ss";
+        $like = "%{$student}%";
+        $params[] = $like;
+        $params[] = $like;
+    }
+    $sql .= " ORDER BY qa.attempted_at DESC";
+
+    $stmt = $conn->prepare($sql);
+    if ($types) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    foreach ($rows as &$r) {
+        $r['percent'] = $r['total'] > 0 ? round($r['score'] / $r['total'] * 100) : 0;
+        $r['passed']  = $r['percent'] >= QUIZ_PASS_PERCENT;
+    }
+
+    echo json_encode(["success" => true, "results" => $rows, "pass_threshold" => QUIZ_PASS_PERCENT]);
+    exit();
+}
+
+if ($action === 'get_results_summary') {
+    $course_id = $_GET['course_id'] ?? null;
+    $student   = trim($_GET['student'] ?? '');
+
+    $sql = "
+        SELECT qa.score, qa.total, qa.user_id
+        FROM quiz_attempts qa
+        JOIN quizzes q ON q.id = qa.quiz_id
+        JOIN users u   ON u.id = qa.user_id
+        WHERE 1=1
+    ";
+    $types = "";
+    $params = [];
+    if ($course_id) { $sql .= " AND q.course_id = ?"; $types .= "i"; $params[] = $course_id; }
+    if ($student !== '') {
+        $sql .= " AND (u.full_name LIKE ? OR u.email LIKE ?)";
+        $types .= "ss";
+        $like = "%{$student}%";
+        $params[] = $like;
+        $params[] = $like;
+    }
+
+    $stmt = $conn->prepare($sql);
+    if ($types) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    $totalAttempts = count($rows);
+    $uniqueStudents = count(array_unique(array_column($rows, 'user_id')));
+    $passed = 0;
+    $percentSum = 0;
+    foreach ($rows as $r) {
+        $percent = $r['total'] > 0 ? ($r['score'] / $r['total'] * 100) : 0;
+        $percentSum += $percent;
+        if ($percent >= QUIZ_PASS_PERCENT) $passed++;
+    }
+    $avgPercent = $totalAttempts > 0 ? round($percentSum / $totalAttempts) : 0;
+    $passRate   = $totalAttempts > 0 ? round($passed / $totalAttempts * 100) : 0;
+
+    echo json_encode([
+        "success" => true,
+        "summary" => [
+            "total_attempts"  => $totalAttempts,
+            "unique_students" => $uniqueStudents,
+            "average_percent" => $avgPercent,
+            "pass_rate"       => $passRate
+        ]
+    ]);
     exit();
 }
 
