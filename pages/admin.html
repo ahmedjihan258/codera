@@ -59,6 +59,7 @@
         <div class="admin-sidebar">
           <div class="admin-nav-item active" onclick="switchTab('courses')">Courses</div>
           <div class="admin-nav-item" onclick="switchTab('lessons')">Lessons</div>
+          <div class="admin-nav-item" onclick="switchTab('quizzes')">Quizzes</div>
           <div class="admin-nav-item" onclick="switchTab('problems')">Problems</div>
           <div class="admin-nav-item" onclick="switchTab('users')">Users</div>
         </div>
@@ -97,6 +98,20 @@
               <table class="data-table">
                 <thead><tr><th>Course</th><th>Module</th><th>Title</th><th>Order</th><th>Actions</th></tr></thead>
                 <tbody id="tbl-lessons"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- QUIZZES TAB -->
+          <section id="tab-quizzes" style="display:none;">
+            <div class="tab-header">
+              <h3>Manage Quizzes</h3>
+              <button class="btn btn-primary btn-sm" onclick="openQuizModal()">+ Add Quiz</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>Course</th><th>Module</th><th>Title</th><th>Questions</th><th>Actions</th></tr></thead>
+                <tbody id="tbl-quizzes"></tbody>
               </table>
             </div>
           </section>
@@ -186,6 +201,66 @@
         </div>
       </div>
       <button class="btn btn-primary btn-block mt-16" onclick="saveLesson()">Save Lesson</button>
+    </div>
+  </div>
+
+  <!-- QUIZ MODAL -->
+  <div class="modal-overlay" id="modal-quiz">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-quiz')">&times;</button>
+      <h3 class="modal-title" id="quiz-modal-title">Add Quiz</h3>
+      <input type="hidden" id="q-id" />
+      <div class="form-group mt-16">
+        <label>Course</label>
+        <select id="q-course-id" onchange="loadQuizModules(this.value)"></select>
+      </div>
+      <div class="form-group">
+        <label>Module</label>
+        <select id="q-module-select">
+          <option value="">-- Select Course First --</option>
+        </select>
+        <div class="content-block-hint">Leave this as "Final Course Quiz" to create the course-wide quiz that unlocks once every module quiz is passed. Otherwise pick the module this quiz belongs to.</div>
+      </div>
+      <div class="form-group"><label>Quiz Title</label><input type="text" id="q-title" placeholder="e.g. Module 1: HTML Basics Quiz" /></div>
+      <button class="btn btn-primary btn-block mt-16" onclick="saveQuiz()">Save Quiz</button>
+    </div>
+  </div>
+
+  <!-- QUIZ QUESTIONS MODAL -->
+  <div class="modal-overlay" id="modal-quiz-questions">
+    <div class="modal" style="max-width:720px;">
+      <button class="modal-close" onclick="closeModal('modal-quiz-questions')">&times;</button>
+      <h3 class="modal-title" id="quiz-questions-title">Quiz Questions</h3>
+      <input type="hidden" id="qq-quiz-id" />
+
+      <div id="qq-list" style="margin-top:16px;margin-bottom:20px;"></div>
+
+      <div class="content-block" style="background:#fff;">
+        <div class="content-block-head">
+          <span class="content-block-tag" id="qq-form-mode">New Question</span>
+        </div>
+        <input type="hidden" id="qq-id" />
+        <div class="form-group"><label>Question</label><textarea id="qq-question" rows="2" placeholder="What does HTML stand for?"></textarea></div>
+        <div class="grid-2">
+          <div class="form-group"><label>Option A</label><input type="text" id="qq-option-a" /></div>
+          <div class="form-group"><label>Option B</label><input type="text" id="qq-option-b" /></div>
+          <div class="form-group"><label>Option C</label><input type="text" id="qq-option-c" /></div>
+          <div class="form-group"><label>Option D</label><input type="text" id="qq-option-d" /></div>
+        </div>
+        <div class="form-group">
+          <label>Correct Option</label>
+          <select id="qq-correct">
+            <option value="a">A</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn btn-primary btn-sm" id="qq-save-btn" onclick="saveQuizQuestion()">+ Add Question</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" id="qq-cancel-btn" style="display:none;" onclick="cancelQuestionEdit()">Cancel Edit</button>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -176,6 +176,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Save Quiz (module quiz, or final course quiz when module_name is left blank)
+    if ($postAction === 'save_quiz') {
+        $id = $input['id'] ?? null;
+        $course_id = $input['course_id'] ?? null;
+        $module_name = trim($input['module_name'] ?? '');
+        $module_name = $module_name === '' ? null : $module_name;
+        $title = trim($input['title'] ?? '');
+
+        if (empty($course_id) || empty($title)) {
+            echo json_encode(["success" => false, "message" => "Course and quiz title are required."]);
+            exit();
+        }
+
+        if ($id) {
+            $stmt = $conn->prepare("UPDATE quizzes SET course_id=?, module_name=?, title=? WHERE id=?");
+            $stmt->bind_param("issi", $course_id, $module_name, $title, $id);
+            $stmt->execute();
+        } else {
+            $stmt = $conn->prepare("INSERT INTO quizzes (course_id, module_name, title) VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $course_id, $module_name, $title);
+            $stmt->execute();
+        }
+
+        echo json_encode(["success" => true, "message" => "Quiz saved successfully."]);
+        exit();
+    }
+
+    // Delete Quiz (cascades to its questions and attempts via FK)
+    if ($postAction === 'delete_quiz') {
+        $id = $_GET['id'] ?? ($input['id'] ?? null);
+        if ($id) {
+            $stmt = $conn->prepare("DELETE FROM quizzes WHERE id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid quiz ID."]);
+        }
+        exit();
+    }
+
+    // Save Quiz Question (belongs to one quiz)
+    if ($postAction === 'save_quiz_question') {
+        $id             = $input['id'] ?? null;
+        $quiz_id        = $input['quiz_id'] ?? null;
+        $question       = trim($input['question'] ?? '');
+        $option_a       = trim($input['option_a'] ?? '');
+        $option_b       = trim($input['option_b'] ?? '');
+        $option_c       = trim($input['option_c'] ?? '');
+        $option_d       = trim($input['option_d'] ?? '');
+        $correct_option = strtolower(trim($input['correct_option'] ?? ''));
+
+        if (empty($quiz_id) || $question === '' || $option_a === '' || $option_b === '' || $option_c === '' || $option_d === '') {
+            echo json_encode(["success" => false, "message" => "Question text and all four options are required."]);
+            exit();
+        }
+        if (!in_array($correct_option, ['a', 'b', 'c', 'd'], true)) {
+            echo json_encode(["success" => false, "message" => "Correct option must be A, B, C, or D."]);
+            exit();
+        }
+
+        if ($id) {
+            $stmt = $conn->prepare("UPDATE quiz_questions SET quiz_id=?, question=?, option_a=?, option_b=?, option_c=?, option_d=?, correct_option=? WHERE id=?");
+            $stmt->bind_param("issssssi", $quiz_id, $question, $option_a, $option_b, $option_c, $option_d, $correct_option, $id);
+            $stmt->execute();
+        } else {
+            $stmt = $conn->prepare("INSERT INTO quiz_questions (quiz_id, question, option_a, option_b, option_c, option_d, correct_option) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("issssss", $quiz_id, $question, $option_a, $option_b, $option_c, $option_d, $correct_option);
+            $stmt->execute();
+        }
+
+        echo json_encode(["success" => true, "message" => "Question saved successfully."]);
+        exit();
+    }
+
+    // Delete Quiz Question
+    if ($postAction === 'delete_quiz_question') {
+        $id = $_GET['id'] ?? ($input['id'] ?? null);
+        if ($id) {
+            $stmt = $conn->prepare("DELETE FROM quiz_questions WHERE id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid question ID."]);
+        }
+        exit();
+    }
+
     // Update User Role
     if ($postAction === 'update_user_role') {
         $id = $input['id'] ?? null;
@@ -251,6 +340,31 @@ if ($action === 'get_lessons') {
         ORDER BY l.id DESC
     ");
     echo json_encode(["success" => true, "lessons" => $result->fetch_all(MYSQLI_ASSOC)]);
+    exit();
+}
+
+if ($action === 'get_quizzes') {
+    $result = $conn->query("
+        SELECT q.id, q.course_id, q.module_name, q.title, c.title AS course_title,
+               (SELECT COUNT(*) FROM quiz_questions WHERE quiz_id = q.id) AS question_count
+        FROM quizzes q
+        LEFT JOIN courses c ON q.course_id = c.id
+        ORDER BY q.course_id ASC, (q.module_name IS NULL) ASC, q.id ASC
+    ");
+    echo json_encode(["success" => true, "quizzes" => $result->fetch_all(MYSQLI_ASSOC)]);
+    exit();
+}
+
+if ($action === 'get_quiz_questions') {
+    $quiz_id = $_GET['quiz_id'] ?? null;
+    if (!$quiz_id) {
+        echo json_encode(["success" => false, "message" => "quiz_id is required.", "questions" => []]);
+        exit();
+    }
+    $stmt = $conn->prepare("SELECT * FROM quiz_questions WHERE quiz_id = ? ORDER BY id ASC");
+    $stmt->bind_param("i", $quiz_id);
+    $stmt->execute();
+    echo json_encode(["success" => true, "questions" => $stmt->get_result()->fetch_all(MYSQLI_ASSOC)]);
     exit();
 }
 
