@@ -146,6 +146,7 @@
     });
 
     // ----- Login submit -----
+ feature/admin-update
     const submitBtn = document.getElementById("submit-btn");
 
     function resetBtn() {
@@ -153,6 +154,8 @@
       submitBtn.disabled = false;
     }
 
+
+main
     document.getElementById("login-form").addEventListener("submit", async function(e) {
       e.preventDefault();
       submitBtn.textContent = "Logging in…";
@@ -170,6 +173,7 @@
           method: "POST",
           credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
+feature/admin-update
           body: JSON.stringify({ email, password, type: selectedRole }),
           signal: controller.signal
         });
@@ -187,6 +191,31 @@
         }
 
         if (!data.success) {
+
+          body: JSON.stringify({ email, password, type: selectedRole })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // Make sure the account's real role matches the tab the user picked
+          if (selectedRole === "admin" && data.role !== "admin") {
+            showAlert("error-msg", "This account isn't an admin. Switch to Student login.");
+            btn.textContent = "Login";
+            btn.disabled = false;
+            return;
+          }
+          if (selectedRole === "user" && data.role === "admin") {
+            showAlert("error-msg", "This is an admin account. Switch to Admin login.");
+            btn.textContent = "Login";
+            btn.disabled = false;
+            return;
+          }
+
+          showAlert("success-msg", "Login successful! Redirecting…");
+          const destination = data.role === "admin" ? "admin.html" : "dashboard.html";
+          setTimeout(() => { window.location.href = destination; }, 800);
+        } else {
+ main
           showAlert("error-msg", data.message || "Login failed.");
           resetBtn();
           return;
