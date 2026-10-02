@@ -11,7 +11,7 @@ if (!isset($_SESSION["user_id"])) {
 $id = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
 
 if ($id) {
-    $stmt = $conn->prepare("SELECT * FROM problems WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, title, description, difficulty, example_input, example_output, hint FROM problems WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $problem = $stmt->get_result()->fetch_assoc();

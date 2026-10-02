@@ -100,12 +100,28 @@
       }
 
       try {
-        const res  = await fetch("../php/signup.php", {
+        const res = await fetch("../php/signup.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ full_name, email, password, confirm_password })
         });
-        const data = await res.json();
+
+        if (!res.ok) {
+          showAlert("error-msg", `Server responded with an error (HTTP ${res.status}). This usually means a PHP error, not a network problem — check the PHP error log or the browser's Network tab for the actual response body.`);
+          btn.textContent = "Create Account";
+          btn.disabled = false;
+          return;
+        }
+
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          showAlert("error-msg", "The server didn't return valid JSON. Open DevTools → Network → signup.php → Response to see what was actually returned (often a PHP warning or an HTML error page).");
+          btn.textContent = "Create Account";
+          btn.disabled = false;
+          return;
+        }
 
         if (data.success) {
           showAlert("success-msg", "Account created! Redirecting to dashboard…");
@@ -116,7 +132,7 @@
           btn.disabled = false;
         }
       } catch {
-        showAlert("error-msg", "Network error. Make sure XAMPP is running.");
+        showAlert("error-msg", "Couldn't reach the server at all. Check that this page's URL starts with http://localhost/ (not file://), that the project folder is inside XAMPP's htdocs, and that Apache is running.");
         btn.textContent = "Create Account";
         btn.disabled = false;
       }

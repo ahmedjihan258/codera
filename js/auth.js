@@ -17,11 +17,20 @@ async function requireAuth() {
     const data = await res.json();
     if (!data.logged_in) {
       window.location.href = "login.html";
+      return;
     }
+    setTopbarHomeLink(data.role);
     return data;
   } catch {
     window.location.href = "login.html";
   }
+}
+
+// Point the "Codera" logo link at the right home page for this user's role,
+// instead of always sending everyone (including admins) to the student dashboard.
+function setTopbarHomeLink(role) {
+  const logo = document.querySelector(".topbar-logo");
+  if (logo) logo.setAttribute("href", role === "admin" ? "admin.html" : "dashboard.html");
 }
 
 //  topbar user info

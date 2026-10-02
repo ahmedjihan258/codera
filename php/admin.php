@@ -3,12 +3,16 @@
 session_start();
 header('Content-Type: application/json');
 require_once 'db.php';
+require_once 'module_access.php';
+require_once 'judge_schema.php';
 
 // Check if user is logged in and is an admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     echo json_encode(["success" => false, "message" => "Unauthorized access."]);
     exit();
 }
+
+ensure_judge_tables($conn);
 
 $action = $_GET['action'] ?? '';
 
@@ -141,7 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $example_input = $input['example_input'] ?? '';
         $example_output = $input['example_output'] ?? '';
         $hint = $input['hint'] ?? '';
-        $solution = $input['solution'] ?? '';
 
         if (empty($title)) {
             echo json_encode(["success" => false, "message" => "Title is required."]);
@@ -149,12 +152,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($id) {
-            $stmt = $conn->prepare("UPDATE problems SET title=?, difficulty=?, description=?, example_input=?, example_output=?, hint=?, solution=? WHERE id=?");
-            $stmt->bind_param("sssssssi", $title, $difficulty, $description, $example_input, $example_output, $hint, $solution, $id);
+            $stmt = $conn->prepare("UPDATE problems SET title=?, difficulty=?, description=?, example_input=?, example_output=?, hint=? WHERE id=?");
+            $stmt->bind_param("ssssssi", $title, $difficulty, $description, $example_input, $example_output, $hint, $id);
             $stmt->execute();
         } else {
-            $stmt = $conn->prepare("INSERT INTO problems (title, difficulty, description, example_input, example_output, hint, solution) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssss", $title, $difficulty, $description, $example_input, $example_output, $hint, $solution);
+            $stmt = $conn->prepare("INSERT INTO problems (title, difficulty, description, example_input, example_output, hint) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $title, $difficulty, $description, $example_input, $example_output, $hint);
             $stmt->execute();
         }
 
@@ -162,16 +165,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Delete Problem
+    // Delete Problem (also cleans up its test cases and submissions —
+    // explicit here since the auto-created judge tables have no FK cascade;
+    // only the SQL-file-imported version does)
     if ($postAction === 'delete_problem') {
         $id = $_GET['id'] ?? ($input['id'] ?? null);
         if ($id) {
+            $stmt = $conn->prepare("DELETE FROM submissions WHERE problem_id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            $stmt = $conn->prepare("DELETE FROM problem_test_cases WHERE problem_id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
             $stmt = $conn->prepare("DELETE FROM problems WHERE id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid problem ID."]);
+        }
+        exit();
+    }
+
+    // Save Test Case (belongs to one problem)
+    if ($postAction === 'save_test_case') {
+        $id              = $input['id'] ?? null;
+        $problem_id      = $input['problem_id'] ?? null;
+        $test_input      = trim($input['input'] ?? '');
+        $expected_output = (string)($input['expected_output'] ?? '');
+        $is_sample       = !empty($input['is_sample']) ? 1 : 0;
+        $order_num       = (int)($input['order_num'] ?? 0);
+        $kind            = (($input['kind'] ?? 'js') === 'stdio') ? 'stdio' : 'js';
+
+        if (empty($problem_id) || $test_input === '' || $expected_output === '') {
+            echo json_encode(["success" => false, "message" => "Problem, input, and expected output are all required."]);
+            exit();
+        }
+
+        if ($id) {
+            $stmt = $conn->prepare("UPDATE problem_test_cases SET problem_id=?, input=?, expected_output=?, is_sample=?, order_num=?, kind=? WHERE id=?");
+            $stmt->bind_param("issiisi", $problem_id, $test_input, $expected_output, $is_sample, $order_num, $kind, $id);
+            $stmt->execute();
+        } else {
+            $stmt = $conn->prepare("INSERT INTO problem_test_cases (problem_id, input, expected_output, is_sample, order_num, kind) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("issiis", $problem_id, $test_input, $expected_output, $is_sample, $order_num, $kind);
+            $stmt->execute();
+        }
+
+        echo json_encode(["success" => true, "message" => "Test case saved successfully."]);
+        exit();
+    }
+
+    // Delete Test Case
+    if ($postAction === 'delete_test_case') {
+        $id = $_GET['id'] ?? ($input['id'] ?? null);
+        if ($id) {
+            $stmt = $conn->prepare("DELETE FROM problem_test_cases WHERE id=?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
             echo json_encode(["success" => true]);
         } else {
-            echo json_encode(["success" => false, "message" => "Invalid problem ID."]);
+            echo json_encode(["success" => false, "message" => "Invalid test case ID."]);
         }
         exit();
     }
@@ -368,9 +425,120 @@ if ($action === 'get_quiz_questions') {
     exit();
 }
 
+if ($action === 'get_quiz_results') {
+    $course_id = $_GET['course_id'] ?? null;
+    $quiz_id   = $_GET['quiz_id'] ?? null;
+    $student   = trim($_GET['student'] ?? '');
+
+    $sql = "
+        SELECT qa.id, qa.user_id, qa.quiz_id, qa.score, qa.total, qa.attempted_at,
+               u.full_name AS student_name, u.email AS student_email,
+               q.title AS quiz_title, q.module_name, q.course_id,
+               c.title AS course_title
+        FROM quiz_attempts qa
+        JOIN users u    ON u.id = qa.user_id
+        JOIN quizzes q  ON q.id = qa.quiz_id
+        JOIN courses c  ON c.id = q.course_id
+        WHERE 1=1
+    ";
+    $types = "";
+    $params = [];
+    if ($course_id) { $sql .= " AND q.course_id = ?"; $types .= "i"; $params[] = $course_id; }
+    if ($quiz_id)   { $sql .= " AND qa.quiz_id = ?";   $types .= "i"; $params[] = $quiz_id; }
+    if ($student !== '') {
+        $sql .= " AND (u.full_name LIKE ? OR u.email LIKE ?)";
+        $types .= "ss";
+        $like = "%{$student}%";
+        $params[] = $like;
+        $params[] = $like;
+    }
+    $sql .= " ORDER BY qa.attempted_at DESC";
+
+    $stmt = $conn->prepare($sql);
+    if ($types) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    foreach ($rows as &$r) {
+        $r['percent'] = $r['total'] > 0 ? round($r['score'] / $r['total'] * 100) : 0;
+        $r['passed']  = $r['percent'] >= QUIZ_PASS_PERCENT;
+    }
+
+    echo json_encode(["success" => true, "results" => $rows, "pass_threshold" => QUIZ_PASS_PERCENT]);
+    exit();
+}
+
+if ($action === 'get_results_summary') {
+    $course_id = $_GET['course_id'] ?? null;
+    $student   = trim($_GET['student'] ?? '');
+
+    $sql = "
+        SELECT qa.score, qa.total, qa.user_id
+        FROM quiz_attempts qa
+        JOIN quizzes q ON q.id = qa.quiz_id
+        JOIN users u   ON u.id = qa.user_id
+        WHERE 1=1
+    ";
+    $types = "";
+    $params = [];
+    if ($course_id) { $sql .= " AND q.course_id = ?"; $types .= "i"; $params[] = $course_id; }
+    if ($student !== '') {
+        $sql .= " AND (u.full_name LIKE ? OR u.email LIKE ?)";
+        $types .= "ss";
+        $like = "%{$student}%";
+        $params[] = $like;
+        $params[] = $like;
+    }
+
+    $stmt = $conn->prepare($sql);
+    if ($types) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    $totalAttempts = count($rows);
+    $uniqueStudents = count(array_unique(array_column($rows, 'user_id')));
+    $passed = 0;
+    $percentSum = 0;
+    foreach ($rows as $r) {
+        $percent = $r['total'] > 0 ? ($r['score'] / $r['total'] * 100) : 0;
+        $percentSum += $percent;
+        if ($percent >= QUIZ_PASS_PERCENT) $passed++;
+    }
+    $avgPercent = $totalAttempts > 0 ? round($percentSum / $totalAttempts) : 0;
+    $passRate   = $totalAttempts > 0 ? round($passed / $totalAttempts * 100) : 0;
+
+    echo json_encode([
+        "success" => true,
+        "summary" => [
+            "total_attempts"  => $totalAttempts,
+            "unique_students" => $uniqueStudents,
+            "average_percent" => $avgPercent,
+            "pass_rate"       => $passRate
+        ]
+    ]);
+    exit();
+}
+
 if ($action === 'get_problems') {
-    $result = $conn->query("SELECT * FROM problems ORDER BY id DESC");
+    $result = $conn->query("
+        SELECT p.*, (SELECT COUNT(*) FROM problem_test_cases WHERE problem_id = p.id) AS test_case_count
+        FROM problems p
+        ORDER BY p.id DESC
+    ");
     echo json_encode(["success" => true, "problems" => $result->fetch_all(MYSQLI_ASSOC)]);
+    exit();
+}
+
+if ($action === 'get_test_cases_admin') {
+    $problem_id = $_GET['problem_id'] ?? null;
+    if (!$problem_id) {
+        echo json_encode(["success" => false, "message" => "problem_id is required.", "test_cases" => []]);
+        exit();
+    }
+    $stmt = $conn->prepare("SELECT * FROM problem_test_cases WHERE problem_id = ? ORDER BY order_num ASC, id ASC");
+    $stmt->bind_param("i", $problem_id);
+    $stmt->execute();
+    echo json_encode(["success" => true, "test_cases" => $stmt->get_result()->fetch_all(MYSQLI_ASSOC)]);
     exit();
 }
 
