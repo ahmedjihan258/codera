@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2026 at 12:24 AM
+-- Generation Time: Oct 02, 2026 at 09:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -55,7 +55,7 @@ CREATE TABLE `community_posts` (
 --
 
 INSERT INTO `community_posts` (`id`, `user_id`, `title`, `content`, `upvotes`, `created_at`) VALUES
-(3, 1, 'Tips for learning Flexbox faster', 'I found that building small layout challenges every day helped me understand Flexbox much better than just reading docs. Try Flexbox Froggy!', 15, '2026-09-06 20:24:13'),
+(3, 1, 'Tips for learning Flexbox faster', 'I found that building small layout challenges every day helped me understand Flexbox much better than just reading docs. Try Flexbox Froggy!', 16, '2026-09-06 20:24:13'),
 (4, 1, 'How do PHP sessions work?', 'Can someone explain the difference between session_start() and cookies? I keep getting confused when studying the PHP module.', 8, '2026-09-06 20:24:13');
 
 -- --------------------------------------------------------
@@ -195,14 +195,90 @@ CREATE TABLE `problems` (
 --
 
 INSERT INTO `problems` (`id`, `title`, `description`, `difficulty`, `example_input`, `example_output`, `hint`, `solution`) VALUES
-(1, 'Sum of Two Numbers', 'Write a JavaScript function that takes two numbers as arguments and returns their sum.', 'Easy', 'add(3, 7)', '10', 'Use the + operator.', 'function add(a, b) {\n  return a + b;\n}'),
-(2, 'Reverse a String', 'Write a function that takes a string and returns it reversed.', 'Easy', 'reverseStr(\"hello\")', '\"olleh\"', 'Try split(), reverse(), and join().', 'function reverseStr(s) {\n  return s.split(\"\").reverse().join(\"\");\n}'),
-(3, 'FizzBuzz', 'Print numbers 1 to 100. For multiples of 3 print Fizz, for multiples of 5 print Buzz, for multiples of both print FizzBuzz.', 'Easy', 'fizzBuzz()', '1, 2, Fizz, 4, Buzz...', 'Use the modulus operator (%).', 'for (let i = 1; i <= 100; i++) {\n  if (i % 15 === 0) console.log(\"FizzBuzz\");\n  else if (i % 3 === 0) console.log(\"Fizz\");\n  else if (i % 5 === 0) console.log(\"Buzz\");\n  else console.log(i);\n}'),
-(4, 'Find the Largest Number', 'Write a function that returns the largest number in an array.', 'Easy', 'findMax([3, 1, 9, 4])', '9', 'Try Math.max() with spread syntax.', 'function findMax(arr) {\n  return Math.max(...arr);\n}'),
-(5, 'Check Palindrome', 'Write a function that returns true if a string is a palindrome (reads the same forwards and backwards).', 'Medium', 'isPalindrome(\"racecar\")', 'true', 'Compare the string with its reverse.', 'function isPalindrome(s) {\n  const rev = s.split(\"\").reverse().join(\"\");\n  return s === rev;\n}'),
-(6, 'Count Vowels', 'Write a function that counts the number of vowels in a string.', 'Easy', 'countVowels(\"hello world\")', '3', 'Check each character against a, e, i, o, u.', 'function countVowels(str) {\n  return (str.match(/[aeiou]/gi) || []).length;\n}'),
-(7, 'Fibonacci Sequence', 'Write a function that returns the first n numbers of the Fibonacci sequence.', 'Medium', 'fibonacci(6)', '[0, 1, 1, 2, 3, 5]', 'Each number is the sum of the two before it.', 'function fibonacci(n) {\n  const seq = [0, 1];\n  for (let i = 2; i < n; i++) {\n    seq.push(seq[i-1] + seq[i-2]);\n  }\n  return seq.slice(0, n);\n}'),
-(8, 'Remove Duplicates', 'Write a function that removes duplicate values from an array.', 'Medium', 'removeDuplicates([1,2,2,3,3,4])', '[1, 2, 3, 4]', 'Use JavaScript Set or filter with indexOf.', 'function removeDuplicates(arr) {\n  return [...new Set(arr)];\n}');
+(1, 'Sum of Two Numbers', 'Write a JavaScript function that takes two numbers as arguments and returns their sum. [C/C++: read two integers a and b; print their sum.]', 'Easy', 'add(3, 7)', '10', 'Use the + operator.', 'function add(a, b) {\n  return a + b;\n}'),
+(2, 'Reverse a String', 'Write a function that takes a string and returns it reversed. [C/C++: read one line of text (use getline); print it reversed.]', 'Easy', 'reverseStr(\"hello\")', '\"olleh\"', 'Try split(), reverse(), and join().', 'function reverseStr(s) {\n  return s.split(\"\").reverse().join(\"\");\n}'),
+(3, 'FizzBuzz', 'Print numbers 1 to 100. For multiples of 3 print Fizz, for multiples of 5 print Buzz, for multiples of both print FizzBuzz. [C/C++: read an integer N; print the numbers 1 to N, one per line.]', 'Easy', 'fizzBuzz()', '1, 2, Fizz, 4, Buzz...', 'Use the modulus operator (%).', 'for (let i = 1; i <= 100; i++) {\n  if (i % 15 === 0) console.log(\"FizzBuzz\");\n  else if (i % 3 === 0) console.log(\"Fizz\");\n  else if (i % 5 === 0) console.log(\"Buzz\");\n  else console.log(i);\n}'),
+(4, 'Find the Largest Number', 'Write a function that returns the largest number in an array. [C/C++: first read n, then n integers; print the largest.]', 'Easy', 'findMax([3, 1, 9, 4])', '9', 'Try Math.max() with spread syntax.', 'function findMax(arr) {\n  return Math.max(...arr);\n}'),
+(5, 'Check Palindrome', 'Write a function that returns true if a string is a palindrome (reads the same forwards and backwards). [C/C++: read one word; print true or false.]', 'Medium', 'isPalindrome(\"racecar\")', 'true', 'Compare the string with its reverse.', 'function isPalindrome(s) {\n  const rev = s.split(\"\").reverse().join(\"\");\n  return s === rev;\n}'),
+(6, 'Count Vowels', 'Write a function that counts the number of vowels in a string. [C/C++: read one line of text (use getline); print the number of vowels, upper or lower case.]', 'Easy', 'countVowels(\"hello world\")', '3', 'Check each character against a, e, i, o, u.', 'function countVowels(str) {\n  return (str.match(/[aeiou]/gi) || []).length;\n}'),
+(7, 'Fibonacci Sequence', 'Write a function that returns the first n numbers of the Fibonacci sequence. [C/C++: read n; print the first n Fibonacci numbers on one line, separated by spaces.]', 'Medium', 'fibonacci(6)', '[0, 1, 1, 2, 3, 5]', 'Each number is the sum of the two before it.', 'function fibonacci(n) {\n  const seq = [0, 1];\n  for (let i = 2; i < n; i++) {\n    seq.push(seq[i-1] + seq[i-2]);\n  }\n  return seq.slice(0, n);\n}'),
+(8, 'Remove Duplicates', 'Write a function that removes duplicate values from an array. [C/C++: first read n, then n integers; print them without duplicates, in original order, separated by spaces.]', 'Medium', 'removeDuplicates([1,2,2,3,3,4])', '[1, 2, 3, 4]', 'Use JavaScript Set or filter with indexOf.', 'function removeDuplicates(arr) {\n  return [...new Set(arr)];\n}');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_test_cases`
+--
+
+CREATE TABLE `problem_test_cases` (
+  `id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
+  `input` text NOT NULL,
+  `expected_output` text NOT NULL,
+  `is_sample` tinyint(1) NOT NULL DEFAULT 0,
+  `order_num` int(11) NOT NULL DEFAULT 0,
+  `kind` varchar(10) NOT NULL DEFAULT 'js'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `problem_test_cases`
+--
+
+INSERT INTO `problem_test_cases` (`id`, `problem_id`, `input`, `expected_output`, `is_sample`, `order_num`, `kind`) VALUES
+(1, 1, 'add(3, 7)', '10', 1, 0, 'js'),
+(2, 1, 'add(-5, 5)', '0', 0, 1, 'js'),
+(3, 1, 'add(100, 250)', '350', 0, 2, 'js'),
+(4, 2, 'reverseStr(\"hello\")', '\"olleh\"', 1, 0, 'js'),
+(5, 2, 'reverseStr(\"a\")', '\"a\"', 0, 1, 'js'),
+(6, 2, 'reverseStr(\"Codera\")', '\"aredoC\"', 0, 2, 'js'),
+(7, 3, 'fizzBuzz()', '1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz\r\n16\r\n17\r\nFizz\r\n19\r\nBuzz\r\nFizz\r\n22\r\n23\r\nFizz\r\nBuzz\r\n26\r\nFizz\r\n28\r\n29\r\nFizzBuzz\r\n31\r\n32\r\nFizz\r\n34\r\nBuzz\r\nFizz\r\n37\r\n38\r\nFizz\r\nBuzz\r\n41\r\nFizz\r\n43\r\n44\r\nFizzBuzz\r\n46\r\n47\r\nFizz\r\n49\r\nBuzz\r\nFizz\r\n52\r\n53\r\nFizz\r\nBuzz\r\n56\r\nFizz\r\n58\r\n59\r\nFizzBuzz\r\n61\r\n62\r\nFizz\r\n64\r\nBuzz\r\nFizz\r\n67\r\n68\r\nFizz\r\nBuzz\r\n71\r\nFizz\r\n73\r\n74\r\nFizzBuzz\r\n76\r\n77\r\nFizz\r\n79\r\nBuzz\r\nFizz\r\n82\r\n83\r\nFizz\r\nBuzz\r\n86\r\nFizz\r\n88\r\n89\r\nFizzBuzz\r\n91\r\n92\r\nFizz\r\n94\r\nBuzz\r\nFizz\r\n97\r\n98\r\nFizz\r\nBuzz', 1, 0, 'js'),
+(8, 4, 'findMax([3, 1, 9, 4])', '9', 1, 0, 'js'),
+(9, 4, 'findMax([-10, -2, -33])', '-2', 0, 1, 'js'),
+(10, 4, 'findMax([5])', '5', 0, 2, 'js'),
+(11, 5, 'isPalindrome(\"racecar\")', 'true', 1, 0, 'js'),
+(12, 5, 'isPalindrome(\"hello\")', 'false', 0, 1, 'js'),
+(13, 5, 'isPalindrome(\"a\")', 'true', 0, 2, 'js'),
+(14, 6, 'countVowels(\"hello world\")', '3', 1, 0, 'js'),
+(15, 6, 'countVowels(\"xyz\")', '0', 0, 1, 'js'),
+(16, 6, 'countVowels(\"AEIOU\")', '5', 0, 2, 'js'),
+(17, 7, 'fibonacci(6)', '[0, 1, 1, 2, 3, 5]', 1, 0, 'js'),
+(18, 7, 'fibonacci(1)', '[0]', 0, 1, 'js'),
+(19, 7, 'fibonacci(2)', '[0, 1]', 0, 2, 'js'),
+(20, 8, 'removeDuplicates([1,2,2,3,3,4])', '[1, 2, 3, 4]', 1, 0, 'js'),
+(21, 8, 'removeDuplicates([1,1,1])', '[1]', 0, 1, 'js'),
+(22, 8, 'removeDuplicates([5,4,3,2,1])', '[5, 4, 3, 2, 1]', 0, 2, 'js'),
+(23, 1, '3 7', '10', 1, 1, 'stdio'),
+(24, 1, '-5 12', '7', 0, 2, 'stdio'),
+(25, 1, '0 0', '0', 0, 3, 'stdio'),
+(26, 1, '1000000 2345678', '3345678', 0, 4, 'stdio'),
+(27, 2, 'hello', 'olleh', 1, 1, 'stdio'),
+(28, 2, 'Codera', 'aredoC', 0, 2, 'stdio'),
+(29, 2, 'a b c', 'c b a', 0, 3, 'stdio'),
+(30, 2, '12345', '54321', 0, 4, 'stdio'),
+(31, 3, '15', '1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz', 1, 1, 'stdio'),
+(32, 3, '100', '1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz\nFizz\n22\n23\nFizz\nBuzz\n26\nFizz\n28\n29\nFizzBuzz\n31\n32\nFizz\n34\nBuzz\nFizz\n37\n38\nFizz\nBuzz\n41\nFizz\n43\n44\nFizzBuzz\n46\n47\nFizz\n49\nBuzz\nFizz\n52\n53\nFizz\nBuzz\n56\nFizz\n58\n59\nFizzBuzz\n61\n62\nFizz\n64\nBuzz\nFizz\n67\n68\nFizz\nBuzz\n71\nFizz\n73\n74\nFizzBuzz\n76\n77\nFizz\n79\nBuzz\nFizz\n82\n83\nFizz\nBuzz\n86\nFizz\n88\n89\nFizzBuzz\n91\n92\nFizz\n94\nBuzz\nFizz\n97\n98\nFizz\nBuzz', 0, 2, 'stdio'),
+(33, 3, '5', '1\n2\nFizz\n4\nBuzz', 0, 3, 'stdio'),
+(34, 3, '1', '1', 0, 4, 'stdio'),
+(35, 4, '4\n3 1 9 4', '9', 1, 1, 'stdio'),
+(36, 4, '5\n-8 -3 -20 -1 -7', '-1', 0, 2, 'stdio'),
+(37, 4, '1\n42', '42', 0, 3, 'stdio'),
+(38, 4, '6\n10 10 2 10 5 7', '10', 0, 4, 'stdio'),
+(39, 5, 'racecar', 'true', 1, 1, 'stdio'),
+(40, 5, 'hello', 'false', 0, 2, 'stdio'),
+(41, 5, 'level', 'true', 0, 3, 'stdio'),
+(42, 5, 'a', 'true', 0, 4, 'stdio'),
+(43, 6, 'hello world', '3', 1, 1, 'stdio'),
+(44, 6, 'AEIOU', '5', 0, 2, 'stdio'),
+(45, 6, 'rhythm', '0', 0, 3, 'stdio'),
+(46, 6, 'Programming Is Fun', '5', 0, 4, 'stdio'),
+(47, 7, '6', '0 1 1 2 3 5', 1, 1, 'stdio'),
+(48, 7, '1', '0', 0, 2, 'stdio'),
+(49, 7, '2', '0 1', 0, 3, 'stdio'),
+(50, 7, '10', '0 1 1 2 3 5 8 13 21 34', 0, 4, 'stdio'),
+(51, 8, '6\n1 2 2 3 3 4', '1 2 3 4', 1, 1, 'stdio'),
+(52, 8, '5\n5 5 5 5 5', '5', 0, 2, 'stdio'),
+(53, 8, '4\n7 1 7 1', '7 1', 0, 3, 'stdio'),
+(54, 8, '7\n9 8 9 7 8 6 7', '9 8 7 6', 0, 4, 'stdio');
 
 -- --------------------------------------------------------
 
@@ -391,6 +467,32 @@ INSERT INTO `quiz_questions` (`id`, `quiz_id`, `question`, `option_a`, `option_b
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `submissions`
+--
+
+CREATE TABLE `submissions` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
+  `code` text NOT NULL,
+  `verdict` enum('Accepted','Wrong Answer','Runtime Error','Compile Error') NOT NULL,
+  `passed_count` int(11) NOT NULL DEFAULT 0,
+  `total_count` int(11) NOT NULL DEFAULT 0,
+  `submitted_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `language` varchar(12) NOT NULL DEFAULT 'javascript'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `submissions`
+--
+
+INSERT INTO `submissions` (`id`, `user_id`, `problem_id`, `code`, `verdict`, `passed_count`, `total_count`, `submitted_at`, `language`) VALUES
+(1, 2, 5, 'function isPalindrome(s) {\n  const rev = s.split(\"\").reverse().join(\"\");\n  return s === rev;\n}\nreturn (isPalindrome(\"racecar\"));', 'Wrong Answer', 2, 3, '2026-10-03 00:50:36', 'javascript'),
+(2, 2, 8, '#include <iostream>\n#include <vector>\n#include <unordered_set>\nusing namespace std;\n\nint main() {\n  int n;\n  cin >> n;\n\n  vector<int> arr(n);\n  for (int i = 0; i < n; i++) cin >> arr[i];\n\n  unordered_set<int> seen;\n  vector<int> result;\n  for (int x : arr) {\n    if (seen.insert(x).second) {   // true only the first time we see x\n      result.push_back(x);\n    }\n  }\n\n  for (size_t i = 0; i < result.size(); i++) {\n    if (i > 0) cout << \" \";\n    cout << result[i];\n  }\n  cout << endl;\n  return 0;\n}', 'Runtime Error', 0, 3, '2026-10-03 01:10:26', 'javascript');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -467,6 +569,13 @@ ALTER TABLE `problems`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `problem_test_cases`
+--
+ALTER TABLE `problem_test_cases`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `problem_id` (`problem_id`);
+
+--
 -- Indexes for table `progress`
 --
 ALTER TABLE `progress`
@@ -495,6 +604,14 @@ ALTER TABLE `quiz_attempts`
 ALTER TABLE `quiz_questions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `quiz_id` (`quiz_id`);
+
+--
+-- Indexes for table `submissions`
+--
+ALTER TABLE `submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `problem_id` (`problem_id`);
 
 --
 -- Indexes for table `users`
@@ -550,6 +667,12 @@ ALTER TABLE `problems`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `problem_test_cases`
+--
+ALTER TABLE `problem_test_cases`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+
+--
 -- AUTO_INCREMENT for table `progress`
 --
 ALTER TABLE `progress`
@@ -572,6 +695,12 @@ ALTER TABLE `quiz_attempts`
 --
 ALTER TABLE `quiz_questions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+
+--
+-- AUTO_INCREMENT for table `submissions`
+--
+ALTER TABLE `submissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -610,6 +739,12 @@ ALTER TABLE `lessons`
   ADD CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `problem_test_cases`
+--
+ALTER TABLE `problem_test_cases`
+  ADD CONSTRAINT `problem_test_cases_ibfk_1` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `progress`
 --
 ALTER TABLE `progress`
@@ -634,6 +769,13 @@ ALTER TABLE `quiz_attempts`
 --
 ALTER TABLE `quiz_questions`
   ADD CONSTRAINT `quiz_questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `submissions`
+--
+ALTER TABLE `submissions`
+  ADD CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`problem_id`) REFERENCES `problems` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

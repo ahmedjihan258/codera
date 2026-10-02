@@ -38,7 +38,7 @@
 <body>
 
   <nav class="topbar">
-    <a href="dashboard.html" class="topbar-logo">
+    <a href="admin.html" class="topbar-logo">
       <div class="topbar-logo-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       </div>
@@ -292,6 +292,48 @@
     </div>
   </div>
 
+  <!-- TEST CASES MODAL -->
+  <div class="modal-overlay" id="modal-test-cases">
+    <div class="modal" style="max-width:720px;">
+      <button class="modal-close" onclick="closeModal('modal-test-cases')">&times;</button>
+      <h3 class="modal-title" id="test-cases-title">Test Cases</h3>
+      <input type="hidden" id="tc-problem-id" />
+
+      <div id="tc-list" style="margin-top:16px;margin-bottom:20px;"></div>
+
+      <div class="content-block" style="background:#fff;">
+        <div class="content-block-head">
+          <span class="content-block-tag" id="tc-form-mode">New Test Case</span>
+        </div>
+        <input type="hidden" id="tc-id" />
+        <div class="form-group">
+          <label>Type</label>
+          <select id="tc-kind" onchange="updateTestCaseHints()">
+            <option value="js">JavaScript — function call (e.g. isPalindrome("racecar"))</option>
+            <option value="stdio">C / C++ — program input (stdin) and printed output (stdout)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="tc-input-label">Input</label>
+          <textarea id="tc-input" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label id="tc-expected-label">Expected Output</label>
+          <textarea id="tc-expected" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+            <input type="checkbox" id="tc-is-sample" style="width:auto;" /> Visible example (students see it when they click Run)
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn btn-primary btn-sm" id="tc-save-btn" onclick="saveTestCase()">+ Add Test Case</button>
+          <button type="button" class="btn btn-outline-dark btn-sm" id="tc-cancel-btn" style="display:none;" onclick="cancelTestCaseEdit()">Cancel Edit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PROBLEM MODAL -->
   <div class="modal-overlay" id="modal-problem">
     <div class="modal" style="max-width:680px;">
@@ -311,12 +353,11 @@
         <div class="form-group"><label>Example Output</label><input type="text" id="p-out" /></div>
       </div>
       <div class="form-group"><label>Hint</label><input type="text" id="p-hint" /></div>
-      <div class="form-group"><label>Solution JS</label><textarea id="p-sol" rows="3"></textarea></div>
       <button class="btn btn-primary btn-block mt-16" onclick="saveProblem()">Save Problem</button>
     </div>
   </div>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/admin.js"></script>
+  <script src="../js/auth.js?v=2"></script>
+  <script src="../js/admin.js?v=2"></script>
 </body>
 </html>

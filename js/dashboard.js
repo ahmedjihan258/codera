@@ -98,6 +98,7 @@ document.addEventListener("click", (e) => {
     document.getElementById("stat-enrolled").textContent  = data.total_enrolled;
     document.getElementById("stat-completed").textContent = data.total_completed;
     document.getElementById("stat-lessons").textContent   = data.lessons_done;
+    document.getElementById("stat-problems").textContent  = data.problems_solved ?? 0;
 
     // Enrolled courses
     const container = document.getElementById("enrolled-courses-list");

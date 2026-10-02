@@ -6,7 +6,8 @@ const adminCache = {
   lessons: {},
   problems: {},
   quizzes: {},
-  quizQuestions: {}
+  quizQuestions: {},
+  testCases: {}
 };
 
 let currentQuestionsQuizId = null;
@@ -148,7 +149,10 @@ function parseContentToBlocks(html) {
   return blocks;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = await requireAuth();
+  if (session) setTopbarUser(session.user_name);
+
   loadStats();
   loadCourses();
   loadLessons();
@@ -916,7 +920,9 @@ async function loadProblems() {
         tr.innerHTML = `
           <td><strong>${escapeHtml(p.title)}</strong></td>
           <td><span class="badge badge-beginner">${escapeHtml(p.difficulty)}</span></td>
+          <td>${p.test_case_count ?? 0}</td>
           <td class="action-btns">
+            <button class="btn btn-outline-dark btn-sm" onclick="openTestCasesModal(${p.id})">Test Cases</button>
             <button class="btn btn-outline-dark btn-sm" onclick="editProblem(${p.id})">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteProblem(${p.id})">Delete</button>
           </td>
@@ -937,7 +943,6 @@ function openProblemModal() {
   document.getElementById("p-in").value = "";
   document.getElementById("p-out").value = "";
   document.getElementById("p-hint").value = "";
-  document.getElementById("p-sol").value = "";
   document.getElementById("problem-modal-title").textContent = "Add Problem";
   openModal("modal-problem");
 }
@@ -953,7 +958,6 @@ function editProblem(id) {
   document.getElementById("p-in").value = p.example_input || "";
   document.getElementById("p-out").value = p.example_output || "";
   document.getElementById("p-hint").value = p.hint || "";
-  document.getElementById("p-sol").value = p.solution || "";
   document.getElementById("problem-modal-title").textContent = "Edit Problem";
   openModal("modal-problem");
 }
@@ -968,8 +972,7 @@ async function saveProblem() {
     description: document.getElementById("p-desc").value.trim(),
     example_input: document.getElementById("p-in").value,
     example_output: document.getElementById("p-out").value,
-    hint: document.getElementById("p-hint").value,
-    solution: document.getElementById("p-sol").value
+    hint: document.getElementById("p-hint").value
   };
 
   const res = await fetch("../php/admin.php?action=save_problem", {
@@ -989,7 +992,7 @@ async function saveProblem() {
 }
 
 async function deleteProblem(id) {
-  if (!confirm("Are you sure you want to delete this problem?")) return;
+  if (!confirm("Are you sure you want to delete this problem? This also deletes its test cases and every student's submissions for it.")) return;
   const res = await fetch(`../php/admin.php?action=delete_problem&id=${id}`, { method: "POST" });
   const data = await res.json();
   if (data.success) {
@@ -997,6 +1000,157 @@ async function deleteProblem(id) {
     loadStats();
   } else {
     alert(data.message || "Failed to delete problem.");
+  }
+}
+
+// ---------- TEST CASES (for the automated judge, inside one problem) ----------
+let currentTestCasesProblemId = null;
+
+async function openTestCasesModal(problemId) {
+  currentTestCasesProblemId = problemId;
+  const p = adminCache.problems[problemId];
+
+  document.getElementById("test-cases-title").textContent = p ? `Test Cases — ${p.title}` : "Test Cases";
+  document.getElementById("tc-problem-id").value = problemId;
+
+  resetTestCaseForm();
+  await loadTestCases(problemId);
+  openModal("modal-test-cases");
+}
+
+async function loadTestCases(problemId) {
+  const list = document.getElementById("tc-list");
+  if (!list) return;
+
+  try {
+    const res = await fetch(`../php/admin.php?action=get_test_cases_admin&problem_id=${problemId}`);
+    const data = await res.json();
+    adminCache.testCases = {};
+
+    if (data.success && data.test_cases && data.test_cases.length) {
+      list.innerHTML = data.test_cases.map((tc, i) => {
+        adminCache.testCases[tc.id] = tc;
+        return `
+          <div class="content-block">
+            <div class="content-block-head">
+              <span class="content-block-tag">
+                #${i + 1} · ${tc.kind === "stdio" ? "C/C++" : "JavaScript"} ${tc.is_sample == 1 ? "· Visible Example" : "· Hidden"}
+              </span>
+              <div class="content-block-actions">
+                <button type="button" onclick="editTestCase(${tc.id})" title="Edit">✎</button>
+                <button type="button" onclick="deleteTestCase(${tc.id})" title="Delete">✕</button>
+              </div>
+            </div>
+            <div class="text-muted text-sm" style="font-family:monospace;">
+              ${escapeHtml(tc.input.replace(/\n/g, " ⏎ "))} <strong>→</strong> ${escapeHtml((tc.expected_output.length > 80 ? tc.expected_output.slice(0, 80) + "…" : tc.expected_output).replace(/\n/g, " ⏎ "))}
+            </div>
+          </div>`;
+      }).join("");
+    } else {
+      list.innerHTML = '<div class="block-empty-state">No test cases yet. Add at least one visible example and a couple of hidden cases below.</div>';
+    }
+  } catch (err) {
+    console.error("Error loading test cases:", err);
+  }
+}
+
+// Changes the labels/placeholders depending on whether this is a JS or a C/C++ test
+function updateTestCaseHints() {
+  const kind  = document.getElementById("tc-kind").value;
+  const input = document.getElementById("tc-input");
+  const exp   = document.getElementById("tc-expected");
+  if (kind === "stdio") {
+    document.getElementById("tc-input-label").textContent    = "Program input (stdin)";
+    document.getElementById("tc-expected-label").textContent = "Expected printed output (stdout)";
+    input.placeholder = "racecar";
+    exp.placeholder   = "true";
+  } else {
+    document.getElementById("tc-input-label").textContent    = "Function call (JavaScript expression)";
+    document.getElementById("tc-expected-label").textContent = "Expected return value (JavaScript expression)";
+    input.placeholder = 'isPalindrome("racecar")';
+    exp.placeholder   = "true";
+  }
+}
+
+function resetTestCaseForm() {
+  document.getElementById("tc-id").value = "";
+  document.getElementById("tc-input").value = "";
+  document.getElementById("tc-expected").value = "";
+  document.getElementById("tc-is-sample").checked = false;
+  document.getElementById("tc-kind").value = "js";
+  updateTestCaseHints();
+  document.getElementById("tc-form-mode").textContent = "New Test Case";
+  document.getElementById("tc-save-btn").textContent = "+ Add Test Case";
+  document.getElementById("tc-cancel-btn").style.display = "none";
+}
+
+function editTestCase(id) {
+  const tc = adminCache.testCases[id];
+  if (!tc) return;
+
+  document.getElementById("tc-id").value = tc.id;
+  document.getElementById("tc-input").value = tc.input;
+  document.getElementById("tc-expected").value = tc.expected_output;
+  document.getElementById("tc-is-sample").checked = tc.is_sample == 1;
+  document.getElementById("tc-kind").value = tc.kind === "stdio" ? "stdio" : "js";
+  updateTestCaseHints();
+  document.getElementById("tc-form-mode").textContent = "Editing Test Case";
+  document.getElementById("tc-save-btn").textContent = "Update Test Case";
+  document.getElementById("tc-cancel-btn").style.display = "inline-block";
+}
+
+function cancelTestCaseEdit() {
+  resetTestCaseForm();
+}
+
+async function saveTestCase() {
+  const id         = document.getElementById("tc-id").value;
+  const problem_id = document.getElementById("tc-problem-id").value;
+  const input      = document.getElementById("tc-input").value.trim();
+  const expected   = document.getElementById("tc-expected").value.trim();
+  const is_sample  = document.getElementById("tc-is-sample").checked;
+  const kind       = document.getElementById("tc-kind").value;
+
+  if (!problem_id || !input || !expected) {
+    alert("Please fill in both the input and the expected output.");
+    return;
+  }
+
+  const payload = {
+    action: "save_test_case",
+    id: id || undefined,
+    problem_id,
+    input,
+    expected_output: expected,
+    is_sample,
+    kind
+  };
+
+  const res = await fetch("../php/admin.php?action=save_test_case", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    resetTestCaseForm();
+    await loadTestCases(problem_id);
+    loadProblems(); // keep the "Test Cases" count in the table behind the modal in sync
+  } else {
+    alert(data.message || "Failed to save test case.");
+  }
+}
+
+async function deleteTestCase(id) {
+  if (!confirm("Delete this test case?")) return;
+  const res = await fetch(`../php/admin.php?action=delete_test_case&id=${id}`, { method: "POST" });
+  const data = await res.json();
+  if (data.success) {
+    await loadTestCases(currentTestCasesProblemId);
+    loadProblems();
+  } else {
+    alert(data.message || "Failed to delete test case.");
   }
 }
 

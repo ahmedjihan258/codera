@@ -29,7 +29,7 @@
     .problem-num { width:36px; height:36px; border-radius:50%; background:rgba(236,91,19,.1); color:var(--orange); font-weight:700; font-size:.82rem; display:flex;align-items:center;justify-content:center; flex-shrink:0; }
 
     /* Problem detail modal */
-    .problem-detail { max-width:680px; }
+    .problem-detail { max-width:740px; }
     .problem-detail h2 { font-size:1.3rem; font-weight:800; margin-bottom:8px; }
     .problem-detail h4 { font-weight:700; margin:16px 0 6px; color:var(--orange); }
     .problem-detail p  { font-size:.93rem; line-height:1.7; color:var(--text); }
@@ -41,11 +41,27 @@
       background:#fef3c7; border:1px solid #fcd34d; border-radius:var(--radius);
       padding:12px 16px; font-size:.88rem; margin:8px 0;
     }
-    .solution-box {
-      background:#f0fdf4; border:1px solid #86efac; border-radius:var(--radius);
-      padding:16px; margin:8px 0; display:none;
+
+    .code-editor {
+      width:100%; min-height:180px; resize:vertical; box-sizing:border-box;
+      background:#1e1e2e; color:#cdd6f4; border:1px solid #313244; border-radius:var(--radius);
+      padding:14px 16px; font-family:'Courier New',monospace; font-size:.88rem; line-height:1.5;
+      tab-size:2;
     }
-    .solution-box.show { display:block; }
+    .code-editor:focus { outline:2px solid var(--orange); border-color:var(--orange); }
+
+    .judge-banner { padding:10px 14px; border-radius:var(--radius); font-size:.9rem; font-weight:700; margin-bottom:10px; }
+    .judge-banner.pass { background:#f0fdf4; color:#166534; border:1px solid #86efac; }
+    .judge-banner.fail { background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; }
+    .judge-banner.info { background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; }
+
+    .judge-row { padding:10px 12px; border-radius:8px; margin-bottom:8px; font-size:.85rem; line-height:1.5; }
+    .judge-row.pass { background:#f0fdf4; border-left:3px solid #22c55e; }
+    .judge-row.fail { background:#fef2f2; border-left:3px solid #ef4444; }
+    .judge-row code { background:rgba(0,0,0,.06); padding:1px 5px; border-radius:4px; }
+
+    .history-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+    .history-row:last-child { border-bottom:none; }
   </style>
 </head>
 <body>
@@ -114,12 +130,26 @@
       </div>
       <h4>Hint</h4>
       <div class="hint-box" id="modal-hint">—</div>
-      <div style="margin-top:20px;">
-        <button class="btn btn-outline-dark" onclick="toggleSolution()">💡 Show Solution</button>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <h4 style="margin:0;">Your Code</h4>
+        <select id="lang-select" onchange="onLanguageChange()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-weight:700;font-size:.85rem;">
+          <option value="javascript">JavaScript</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+        </select>
       </div>
-      <div class="solution-box" id="solution-box">
-        <h4 style="margin-top:0;color:#166534;">Solution</h4>
-        <pre id="modal-solution">—</pre>
+      <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="// Write your function here, then Run against the example or Submit to check it against all test cases."></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+        <button class="btn btn-outline-dark btn-sm" id="run-btn" onclick="runCode()">▶ Run</button>
+        <button class="btn btn-primary btn-sm" id="submit-btn" onclick="submitCode()">Submit</button>
+        <span id="judge-status" class="text-muted text-sm"></span>
+      </div>
+      <div id="judge-results" style="margin-top:14px;"></div>
+
+      <div style="margin-top:20px;">
+        <h4 style="cursor:pointer;user-select:none;" onclick="toggleHistory()">📜 Submission History <span id="history-toggle-icon">▾</span></h4>
+        <div id="submission-history" style="display:none;"></div>
       </div>
     </div>
   </div>
