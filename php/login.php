@@ -26,7 +26,13 @@ if ($email === "" || $password === "") {
 }
 
 try {
-    // 1. UPDATED: Fetch 'role' along with id, full_name, and password
+    // Make sure the 'role' column exists (older database dumps don't have it, which made login fail)
+    $col = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
+    if ($col && $col->num_rows === 0) {
+        $conn->query("ALTER TABLE users ADD COLUMN role ENUM('user','admin') NOT NULL DEFAULT 'user' AFTER password");
+        $conn->query("UPDATE users SET role='admin' WHERE email='admin@codera.com'");
+    }
+
     $stmt = $conn->prepare("SELECT id, full_name, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -54,6 +60,7 @@ try {
     $_SESSION["user_id"]   = (int)$user["id"];
     $_SESSION["user_name"] = $user["full_name"];
     $_SESSION["role"]      = $user["role"]; // Store role in session
+    session_write_close(); // release the session lock so the next page loads instantly
 
     echo json_encode([
         "success"   => true,
