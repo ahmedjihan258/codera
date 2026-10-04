@@ -52,45 +52,73 @@
 
       <!--Sorting -->
       <div class="viz-panel active" id="tab-sorting">
-        <div class="card">
-          <div class="card-header">Bubble Sort Visualizer</div>
-          <div class="card-body">
-            <p class="text-muted text-sm mb-16">Enter comma-separated numbers (max 12) and watch Bubble Sort step through the array.</p>
-            <div class="viz-controls">
-              <input class="viz-input" type="text" id="sort-input" value="64, 34, 25, 12, 22, 11, 90" placeholder="e.g. 5, 3, 8, 1, 9" />
-              <button class="btn btn-primary" onclick="startSort()">▶ Sort</button>
-              <button class="btn btn-outline-dark" onclick="resetSort()">Reset</button>
-              <label style="font-size:.85rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
-                Speed:
-                <select id="sort-speed" style="width:auto;padding:6px 10px;">
-                  <option value="600">Slow</option>
-                  <option value="300" selected>Normal</option>
-                  <option value="100">Fast</option>
-                </select>
-              </label>
-            </div>
 
-            <div class="viz-canvas" id="sort-canvas">
-              <div class="bar-chart" id="bar-chart"></div>
-            </div>
-            <div class="viz-log" id="sort-log">
-              <div class="log-line">— Enter numbers and press Sort —</div>
-            </div>
-          </div>
+        <!-- Algorithm cards -->
+        <div id="sort-list-view">
+          <p class="text-muted text-sm mb-16">Choose a sorting algorithm to see it step by step.</p>
+          <div class="sort-grid" id="sort-grid"></div>
         </div>
 
-        <!-- Explanation -->
-        <div class="card mt-16">
-          <div class="card-header">How Bubble Sort Works</div>
-          <div class="card-body" style="font-size:.92rem;line-height:1.75;color:var(--text);">
-            <p><strong>Bubble Sort</strong> repeatedly steps through the list, compares adjacent elements, and swaps them if they're in the wrong order. The largest element "bubbles" to the end after each pass.</p>
-            <pre style="background:#1e1e2e;color:#cdd6f4;border-radius:var(--radius);padding:16px 20px;font-size:.82rem;margin-top:12px;">for i from 0 to n-1:
-  for j from 0 to n-i-2:
-    if arr[j] &gt; arr[j+1]:
-      swap(arr[j], arr[j+1])
+        <!-- Simulation -->
+        <div id="sort-detail-view" style="display:none;">
+          <button class="btn btn-outline-dark btn-sm mb-16" onclick="closeSort()">← All Algorithms</button>
+          <div class="card">
+            <div class="card-header" id="sort-title">Sort Visualizer</div>
+            <div class="card-body">
+              <p class="text-muted text-sm mb-16">Enter comma-separated numbers (max 12), then press Start. You can pause, resume or go one step at a time.</p>
+              <div class="viz-controls">
+                <input class="viz-input" type="text" id="sort-input" value="64, 34, 25, 12, 22, 11, 90" placeholder="e.g. 5, 3, 8, 1, 9" onchange="resetSort()" />
+                <button class="btn btn-primary" id="sort-main-btn" onclick="toggleSort()">▶ Start</button>
+                <button class="btn btn-outline-dark" id="sort-pause-btn" onclick="pauseSort()" disabled>⏸ Pause</button>
+                <button class="btn btn-outline-dark" id="sort-step-btn" onclick="stepSort()">Step ›</button>
+                <button class="btn btn-outline-dark" onclick="resetSort()">Reset</button>
+                <button class="btn btn-outline-dark" id="sort-random-btn" onclick="randomSort()">Random</button>
+                <label style="font-size:.85rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+                  Speed:
+                  <select id="sort-speed" style="width:auto;padding:6px 10px;">
+                    <option value="900">Slow</option>
+                    <option value="450" selected>Normal</option>
+                    <option value="150">Fast</option>
+                  </select>
+                </label>
+              </div>
 
-Time Complexity:  O(n²)
-Space Complexity: O(1)</pre>
+              <div class="sort-stats">
+                <span class="sort-status idle" id="sort-status">Ready</span>
+                <span>Comparisons: <strong id="sort-comps">0</strong></span>
+                <span>Swaps / Writes: <strong id="sort-moves">0</strong></span>
+                <span class="sort-legend">
+                  <i class="lg comparing"></i>Comparing
+                  <i class="lg swapping"></i>Swap / Write
+                  <i class="lg pivot"></i>Pivot / Min
+                  <i class="lg sorted"></i>Sorted
+                </span>
+              </div>
+
+              <div class="sort-split">
+                <div class="code-panel">
+                  <div class="code-panel-head">Simulation</div>
+                  <div class="viz-canvas sim-body" id="sort-canvas">
+                    <div class="bar-chart" id="bar-chart"></div>
+                  </div>
+                </div>
+                <div class="code-panel">
+                  <div class="code-panel-head">What's happening</div>
+                  <div class="viz-log" id="sort-log">
+                    <div class="log-line">— Press Start to begin —</div>
+                  </div>
+                </div>
+                <div class="code-panel">
+                  <div class="code-panel-head">Code</div>
+                  <div class="code-body" id="sort-code"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-16">
+            <div class="card-header" id="sort-about-title">How it Works</div>
+            <div class="card-body" id="sort-about" style="font-size:.92rem;line-height:1.75;color:var(--text);"></div>
           </div>
         </div>
       </div>
