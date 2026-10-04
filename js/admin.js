@@ -159,6 +159,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadQuizzes();
   loadResults();
   loadProblems();
+  fillSubmissionProblemFilter();
+  loadSubmissions();
   loadUsers();
 
   // Attach dynamic listener to course selector in lesson modal
@@ -1151,6 +1153,120 @@ async function deleteTestCase(id) {
     loadProblems();
   } else {
     alert(data.message || "Failed to delete test case.");
+  }
+}
+
+// ---------- SUBMISSIONS (who submitted which problem + verdict) ----------
+let submissionsDebounceTimer = null;
+function debouncedLoadSubmissions() {
+  clearTimeout(submissionsDebounceTimer);
+  submissionsDebounceTimer = setTimeout(loadSubmissions, 350);
+}
+
+function verdictBadge(v) {
+  const cls = v === "Accepted" ? "badge-beginner" : (v === "Wrong Answer" ? "badge-medium" : "badge-hard");
+  return `<span class="badge ${cls}">${escapeHtml(v)}</span>`;
+}
+
+function langLabel(l) {
+  return { javascript: "JavaScript", c: "C", cpp: "C++" }[l] || (l || "N/A");
+}
+
+async function loadSubmissionsSummary() {
+  try {
+    const res = await fetch("../php/admin.php?action=get_submissions_summary");
+    const data = await res.json();
+    if (data.success && data.summary) {
+      document.getElementById("sub-total-val").textContent = data.summary.total;
+      document.getElementById("sub-students-val").textContent = data.summary.unique_students;
+      document.getElementById("sub-accepted-val").textContent = data.summary.accepted;
+      document.getElementById("sub-rate-val").textContent = `${data.summary.acceptance_rate}%`;
+    }
+  } catch (err) {
+    console.error("Error loading submissions summary:", err);
+  }
+}
+
+async function fillSubmissionProblemFilter() {
+  const sel = document.getElementById("sub-problem-filter");
+  if (!sel) return;
+  try {
+    const res = await fetch("../php/admin.php?action=get_problems");
+    const data = await res.json();
+    if (data.success && data.problems) {
+      const cur = sel.value;
+      sel.innerHTML = `<option value="">All Problems</option>` +
+        data.problems.slice().reverse().map(p => `<option value="${p.id}">${escapeHtml(p.title)}</option>`).join("");
+      sel.value = cur;
+    }
+  } catch (err) {
+    console.error("Error loading problem filter:", err);
+  }
+}
+
+async function loadSubmissions() {
+  const tbody = document.getElementById("tbl-submissions");
+  if (!tbody) return;
+
+  const student = document.getElementById("sub-student-filter").value.trim();
+  const problem = document.getElementById("sub-problem-filter").value;
+  const verdict = document.getElementById("sub-verdict-filter").value;
+  const lang    = document.getElementById("sub-lang-filter").value;
+
+  loadSubmissionsSummary();
+
+  try {
+    const params = new URLSearchParams({ action: "get_submissions" });
+    if (student) params.set("student", student);
+    if (problem) params.set("problem_id", problem);
+    if (verdict) params.set("verdict", verdict);
+    if (lang)    params.set("language", lang);
+
+    const res = await fetch(`../php/admin.php?${params.toString()}`);
+    const data = await res.json();
+
+    tbody.innerHTML = "";
+    if (data.success && data.submissions && data.submissions.length) {
+      data.submissions.forEach(s => {
+        const when = s.submitted_at ? new Date(s.submitted_at.replace(" ", "T")).toLocaleString() : "N/A";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="text-muted text-sm">${s.id}</td>
+          <td><strong>${escapeHtml(s.student_name)}</strong><div class="text-muted text-sm">${escapeHtml(s.student_email)}</div></td>
+          <td>${escapeHtml(s.problem_title)}<div><span class="badge badge-${String(s.difficulty).toLowerCase()}">${escapeHtml(s.difficulty)}</span></div></td>
+          <td>${langLabel(s.language)}</td>
+          <td>${verdictBadge(s.verdict)}</td>
+          <td>${s.passed_count} / ${s.total_count}</td>
+          <td class="text-muted text-sm">${when}</td>
+          <td><button class="btn btn-outline-dark btn-sm" onclick="viewSubmission(${s.id})">View Code</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      const filtered = student || problem || verdict || lang;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-muted" style="text-align:center;padding:24px;">${filtered ? "No submissions match this filter." : "No submissions yet."}</td></tr>`;
+    }
+  } catch (err) {
+    console.error("Error loading submissions:", err);
+  }
+}
+
+async function viewSubmission(id) {
+  try {
+    const res = await fetch(`../php/admin.php?action=get_submission_code&id=${id}`);
+    const data = await res.json();
+    if (!data.success) { alert(data.message || "Could not load submission."); return; }
+    const s = data.submission;
+    const when = s.submitted_at ? new Date(s.submitted_at.replace(" ", "T")).toLocaleString() : "N/A";
+    document.getElementById("sub-modal-title").textContent = `${s.problem_title} — Submission #${s.id}`;
+    document.getElementById("sub-modal-meta").innerHTML = `
+      <div><strong>Student:</strong> ${escapeHtml(s.student_name)} (${escapeHtml(s.student_email)})</div>
+      <div><strong>Language:</strong> ${langLabel(s.language)} &nbsp;|&nbsp; <strong>Verdict:</strong> ${verdictBadge(s.verdict)} &nbsp;|&nbsp; <strong>Tests passed:</strong> ${s.passed_count} / ${s.total_count}</div>
+      <div><strong>Submitted:</strong> ${when}</div>`;
+    document.getElementById("sub-modal-code").textContent = s.code;
+    openModal("modal-submission");
+  } catch (err) {
+    console.error("Error loading submission:", err);
   }
 }
 

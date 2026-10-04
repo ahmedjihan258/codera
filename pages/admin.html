@@ -62,6 +62,7 @@
           <div class="admin-nav-item" onclick="switchTab('quizzes')">Quizzes</div>
           <div class="admin-nav-item" onclick="switchTab('results')">Results</div>
           <div class="admin-nav-item" onclick="switchTab('problems')">Problems</div>
+          <div class="admin-nav-item" onclick="switchTab('submissions')">Submissions</div>
           <div class="admin-nav-item" onclick="switchTab('users')">Users</div>
         </div>
 
@@ -154,6 +155,46 @@
               <table class="data-table">
                 <thead><tr><th>Title</th><th>Difficulty</th><th>Actions</th></tr></thead>
                 <tbody id="tbl-problems"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- SUBMISSIONS TAB -->
+          <section id="tab-submissions" style="display:none;">
+            <div class="tab-header" style="flex-wrap:wrap;gap:10px;">
+              <h3>Problem Submissions</h3>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <input type="text" id="sub-student-filter" placeholder="Search student name or email…" oninput="debouncedLoadSubmissions()" style="min-width:220px;" />
+                <select id="sub-problem-filter" onchange="loadSubmissions()" style="max-width:200px;">
+                  <option value="">All Problems</option>
+                </select>
+                <select id="sub-verdict-filter" onchange="loadSubmissions()" style="max-width:170px;">
+                  <option value="">All Verdicts</option>
+                  <option>Accepted</option>
+                  <option>Wrong Answer</option>
+                  <option>Runtime Error</option>
+                  <option>Compile Error</option>
+                </select>
+                <select id="sub-lang-filter" onchange="loadSubmissions()" style="max-width:150px;">
+                  <option value="">All Languages</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="c">C</option>
+                  <option value="cpp">C++</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-4 mb-24">
+              <div class="card card-body"><div class="text-muted">Total Submissions</div><h2 id="sub-total-val" class="text-orange mt-8">0</h2></div>
+              <div class="card card-body"><div class="text-muted">Students Who Submitted</div><h2 id="sub-students-val" class="text-orange mt-8">0</h2></div>
+              <div class="card card-body"><div class="text-muted">Accepted</div><h2 id="sub-accepted-val" class="text-orange mt-8">0</h2></div>
+              <div class="card card-body"><div class="text-muted">Acceptance Rate</div><h2 id="sub-rate-val" class="text-orange mt-8">0%</h2></div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Student</th><th>Problem</th><th>Language</th><th>Verdict</th><th>Tests Passed</th><th>Submitted</th><th>Code</th></tr></thead>
+                <tbody id="tbl-submissions"></tbody>
               </table>
             </div>
           </section>
@@ -357,7 +398,17 @@
     </div>
   </div>
 
+  <!-- SUBMISSION CODE MODAL -->
+  <div class="modal-overlay" id="modal-submission">
+    <div class="modal" style="max-width:760px;">
+      <button class="modal-close" onclick="closeModal('modal-submission')">&times;</button>
+      <h3 class="modal-title" id="sub-modal-title">Submission</h3>
+      <div id="sub-modal-meta" class="text-muted text-sm mt-8" style="line-height:1.8;"></div>
+      <pre id="sub-modal-code" style="background:#1e1e2e;color:#cdd6f4;border-radius:10px;padding:16px;margin-top:14px;font-size:.82rem;overflow:auto;max-height:420px;white-space:pre;"></pre>
+    </div>
+  </div>
+
   <script src="../js/auth.js?v=2"></script>
-  <script src="../js/admin.js?v=2"></script>
+  <script src="../js/admin.js?v=3"></script>
 </body>
 </html>

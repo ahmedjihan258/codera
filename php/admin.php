@@ -529,6 +529,83 @@ if ($action === 'get_problems') {
     exit();
 }
 
+// ---------- SUBMISSIONS (admin view of every student's problem submissions) ----------
+if ($action === 'get_submissions') {
+    $problem_id = (int)($_GET['problem_id'] ?? 0);
+    $verdict    = trim($_GET['verdict'] ?? '');
+    $language   = trim($_GET['language'] ?? '');
+    $student    = trim($_GET['student'] ?? '');
+
+    $sql = "
+        SELECT s.id, s.user_id, s.problem_id, s.verdict, s.passed_count, s.total_count,
+               s.submitted_at, s.language,
+               u.full_name AS student_name, u.email AS student_email,
+               p.title AS problem_title, p.difficulty
+        FROM submissions s
+        JOIN users u    ON u.id = s.user_id
+        JOIN problems p ON p.id = s.problem_id
+        WHERE 1=1
+    ";
+    $types = "";
+    $params = [];
+    if ($problem_id) { $sql .= " AND s.problem_id = ?"; $types .= "i"; $params[] = $problem_id; }
+    if ($verdict !== '')  { $sql .= " AND s.verdict = ?";  $types .= "s"; $params[] = $verdict; }
+    if ($language !== '') { $sql .= " AND s.language = ?"; $types .= "s"; $params[] = $language; }
+    if ($student !== '') {
+        $sql .= " AND (u.full_name LIKE ? OR u.email LIKE ?)";
+        $types .= "ss";
+        $like = "%{$student}%";
+        $params[] = $like;
+        $params[] = $like;
+    }
+    $sql .= " ORDER BY s.submitted_at DESC, s.id DESC LIMIT 500";
+
+    $stmt = $conn->prepare($sql);
+    if ($types) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    echo json_encode(["success" => true, "submissions" => $stmt->get_result()->fetch_all(MYSQLI_ASSOC)]);
+    exit();
+}
+
+if ($action === 'get_submissions_summary') {
+    $row = $conn->query("
+        SELECT COUNT(*) AS total,
+               COUNT(DISTINCT user_id) AS students,
+               SUM(verdict = 'Accepted') AS accepted
+        FROM submissions
+    ")->fetch_assoc();
+    $total    = (int)$row['total'];
+    $accepted = (int)$row['accepted'];
+    echo json_encode([
+        "success" => true,
+        "summary" => [
+            "total"           => $total,
+            "unique_students" => (int)$row['students'],
+            "accepted"        => $accepted,
+            "acceptance_rate" => $total > 0 ? round($accepted / $total * 100) : 0
+        ]
+    ]);
+    exit();
+}
+
+if ($action === 'get_submission_code') {
+    $id = (int)($_GET['id'] ?? 0);
+    $stmt = $conn->prepare("
+        SELECT s.id, s.code, s.verdict, s.passed_count, s.total_count, s.submitted_at, s.language,
+               u.full_name AS student_name, u.email AS student_email,
+               p.title AS problem_title
+        FROM submissions s
+        JOIN users u    ON u.id = s.user_id
+        JOIN problems p ON p.id = s.problem_id
+        WHERE s.id = ?
+    ");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $sub = $stmt->get_result()->fetch_assoc();
+    echo json_encode($sub ? ["success" => true, "submission" => $sub] : ["success" => false, "message" => "Submission not found."]);
+    exit();
+}
+
 if ($action === 'get_test_cases_admin') {
     $problem_id = $_GET['problem_id'] ?? null;
     if (!$problem_id) {
